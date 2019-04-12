@@ -1,0 +1,10 @@
+start
+end
+base
+equ
+org
+ltorg
+byte
+word
+resb
+resw

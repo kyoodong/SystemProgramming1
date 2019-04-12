@@ -28,6 +28,12 @@
     <Text Include="input.txt">
       <Filter>리소스 파일</Filter>
     </Text>
+    <Text Include="Directives.txt">
+      <Filter>리소스 파일</Filter>
+    </Text>
+    <Text Include="Opcodes.txt">
+      <Filter>리소스 파일</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <None Include="inst.data">
