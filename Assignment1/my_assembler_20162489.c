@@ -16,7 +16,6 @@
 #include <string.h>
 #include <fcntl.h>
 
-// 파일명의 "00000000"은 자신의 학번으로 변경할 것.
 #include "my_assembler_20162489.h"
 
 /* ----------------------------------------------------------------------------------
@@ -91,9 +90,11 @@ int init_my_assembler(void)
 int init_inst_file(char *inst_file)
 {
 	FILE * file = fopen(inst_file, "r");
+	if (file == NULL) {
+		return -1;
+	}
 	int errno;
 	
-	/* add your code here */
 	while (!feof(file)) {
 		inst* p_inst = malloc(sizeof(inst));
 
@@ -104,7 +105,7 @@ int init_inst_file(char *inst_file)
 				free(inst_table[i]);
 			}
 			inst_index = 0;
-			return -1;
+			return -2;
 		}
 		inst_table[inst_index++] = p_inst;
 	}
@@ -121,11 +122,17 @@ int init_inst_file(char *inst_file)
  */
 int init_input_file(char *input_file)
 {
-	FILE * file;
+	FILE * file = fopen(input_file, "r");
+	if (file == NULL) {
+		return -1;
+	}
 	int errno;
 
-	/* add your code here */
-
+	while (!feof(file)) {
+		char str[100];
+		fscanf("%[^\n]", str);
+		token_parsing(str);
+	}
 	
 	return errno;
 }
