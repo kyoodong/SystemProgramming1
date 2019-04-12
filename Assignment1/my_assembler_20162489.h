@@ -11,10 +11,10 @@
  * 라인 별로 하나의 instruction을 저장한다.
  */
 struct inst_unit {
-	char str[10];
-	unsigned char op;
+	char name[10];
+	unsigned char opcode;
 	int format;
-	int ops;
+	int operandCount;
 };
 typedef struct inst_unit inst;
 inst *inst_table[MAX_INST];

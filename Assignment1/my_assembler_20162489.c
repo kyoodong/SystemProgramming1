@@ -39,7 +39,7 @@ int main(int args, char *arg[])
 		printf("assem_pass1: 패스1 과정에서 실패하였습니다.  \n") ; 
 		return -1 ; 
 	}
-	make_opcode_output("output_00000000");
+	make_opcode_output("output_20162489");
 
 	/*
 	* 추후 프로젝트에서 사용되는 부분
@@ -90,12 +90,25 @@ int init_my_assembler(void)
  */
 int init_inst_file(char *inst_file)
 {
-	FILE * file;
+	FILE * file = fopen(inst_file, "r");
 	int errno;
-
+	
 	/* add your code here */
+	while (!feof(file)) {
+		inst* p_inst = malloc(sizeof(inst));
 
-	return errno;
+		// 형식에 맞춰서 읽어들임
+		if (fscanf(file, "%s %d %2hhx %d", p_inst->name, &p_inst->format, &p_inst->opcode, &p_inst->operandCount) != 4) {
+			// 형식에 맞지 않은 경우 지금까지 읽었던 데이터를 모두 메모리 해제
+			for (int i = 0; i < inst_index; i++) {
+				free(inst_table[i]);
+			}
+			inst_index = 0;
+			return -1;
+		}
+		inst_table[inst_index++] = p_inst;
+	}
+	return 0;
 }
 
 /* ----------------------------------------------------------------------------------
@@ -112,6 +125,7 @@ int init_input_file(char *input_file)
 	int errno;
 
 	/* add your code here */
+
 	
 	return errno;
 }
