@@ -18,6 +18,8 @@
 
 #include "my_assembler_20162489.h"
 
+int isEqualString(const char* str1, const char* str2);
+
 /* ----------------------------------------------------------------------------------
  * 설명 : 사용자로 부터 어셈블리 파일을 받아서 명령어의 OPCODE를 찾아 출력한다.
  * 매계 : 실행 파일, 어셈블리 파일 
@@ -126,12 +128,18 @@ int init_input_file(char *input_file)
 	if (file == NULL) {
 		return -1;
 	}
+	line_num = 0;
 	int errno;
 
 	while (!feof(file)) {
 		char str[100];
-		fscanf("%[^\n]", str);
-		token_parsing(str);
+		fscanf(file, "%[^\n]", str);
+		fgetc(file);
+
+		char* d_str = malloc(sizeof(char) * strlen(str));
+		strcpy(d_str, str);
+		input_data[line_num++] = d_str;
+		token_parsing(d_str);
 	}
 	
 	return errno;
@@ -147,8 +155,41 @@ int init_input_file(char *input_file)
  */
 int token_parsing(char *str) 
 {
-	/* add your code here */
+	token* newToken = malloc(sizeof(token));
 
+	// str 내 읽어들일 글자 인덱스
+	int index = 0;
+
+	// Label
+	if (str[index] != '\t') {
+		sscanf(str, "%s", newToken->label);
+		index += strlen(newToken->label);
+	}
+
+	index++;
+	sscanf(str + index, "%s", newToken->operator);
+	index += (strlen(newToken->operator) + 1);
+
+	sscanf(str + index, "%s\t%[^\n]", newToken->operand[0], newToken->comment);
+
+	token_table[token_line++] = newToken;
+}
+
+/*
+* 설명 : 두 문자열이 같은지 비교하는 함수이다.
+* 매개 : 비교하고 싶은 문자열
+* 반환 : 같음 = 1, 다름 = 0
+*/
+int isEqualString(const char* str1, const char* str2) {
+	int length = strlen(str1);
+	if (length != strlen(str2))
+		return 0;
+
+	for (int i = 0; i < length; i++) {
+		if (str1[i] != str2[i])
+			return 0;
+	}
+	return 1;
 }
 
 /* ----------------------------------------------------------------------------------
