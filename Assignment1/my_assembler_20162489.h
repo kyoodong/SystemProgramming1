@@ -5,6 +5,15 @@
 #define MAX_INST 256
 #define MAX_LINES 5000
 #define MAX_OPERAND 3
+#define MAX_DIRECTIVE 20
+
+struct directive_unit {
+	char name[10];
+	int operandCount;
+};
+typedef struct directive_unit directive;
+directive *directive_table[MAX_DIRECTIVE];
+int directive_index;
 
 /* 
  * instruction 목록 파일로 부터 정보를 받아와서 생성하는 구조체 변수이다.
@@ -34,9 +43,12 @@ static int line_num;
  */
 struct token_unit {
 	char label[20];
-	char operator[20]; 
+	char operator[20];
 	char operand[MAX_OPERAND][20];
 	char comment[100];
+	int instIndex;
+	int directiveIndex;
+	int operandCount;
 	//char nixbpe; // 추후 프로젝트에서 사용된다.
 };
 
@@ -69,6 +81,14 @@ int token_parsing(char *str);
 int search_opcode(char *str);
 static int assem_pass1(void);
 void make_opcode_output(char *file_name);
+
+// 새로 정의한 함수
+int init_directive_file(char *directive_file);
+int search_directive(char *str);
+int readOperand(const char* str, char* string_array_for_save);
+int skipPastBlank(char* str);
+int indexOf(char* str, char c);
+int is_extend(char *str);
 
 /* 추후 프로젝트에서 사용하게 되는 함수*/
 void make_symtab_output(char *file_name);

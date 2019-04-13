@@ -157,7 +157,7 @@
     <ClInclude Include="my_assembler_20162489.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Directives.txt" />
+    <Text Include="directive.data" />
     <Text Include="input.txt" />
     <Text Include="Opcodes.txt" />
   </ItemGroup>

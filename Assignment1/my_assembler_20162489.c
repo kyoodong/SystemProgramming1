@@ -69,6 +69,8 @@ int init_my_assembler(void)
 {
 	int result ; 
 
+	if ((result = init_directive_file("directive.data")) < 0)
+		return -1;
 	if((result = init_inst_file("inst.data")) < 0 )
 		return -1 ;
 	if((result = init_input_file("input.txt")) < 0 )
@@ -93,12 +95,13 @@ int init_inst_file(char *inst_file)
 {
 	FILE * file = fopen(inst_file, "r");
 	if (file == NULL) {
+		fclose(file);
 		return -1;
 	}
 	int errno;
 	
 	while (!feof(file)) {
-		inst* p_inst = malloc(sizeof(inst));
+		inst* p_inst = calloc(sizeof(inst), 1);
 
 		// 형식에 맞춰서 읽어들임
 		if (fscanf(file, "%s %d %2hhx %d", p_inst->name, &p_inst->format, &p_inst->opcode, &p_inst->operandCount) != 4) {
@@ -107,10 +110,45 @@ int init_inst_file(char *inst_file)
 				free(inst_table[i]);
 			}
 			inst_index = 0;
+			fclose(file);
 			return -2;
 		}
 		inst_table[inst_index++] = p_inst;
 	}
+	fclose(file);
+	return 0;
+}
+
+/* ----------------------------------------------------------------------------------
+ * 설명 : 어셈블러 지시어 목록 파일을 읽어 지시어 목록 테이블(directive_table)을 생성하는 함수이다.
+ * 매계 : 지시어 목록 파일
+ * 반환 : 정상종료 = 0 , 에러 < 0
+ */
+int init_directive_file(char *directive_file)
+{
+	FILE * file = fopen(directive_file, "r");
+	if (file == NULL) {
+		fclose(file);
+		return -1;
+	}
+	int errno;
+
+	while (!feof(file)) {
+		directive* p_directive = calloc(sizeof(directive), 1);
+
+		// 형식에 맞춰서 읽어들임
+		if (fscanf(file, "%s %d", p_directive->name, &p_directive->operandCount) != 2) {
+			// 형식에 맞지 않은 경우 지금까지 읽었던 데이터를 모두 메모리 해제
+			for (int i = 0; i < directive_index; i++) {
+				free(directive_table[i]);
+			}
+			directive_index = 0;
+			fclose(file);
+			return -2;
+		}
+		directive_table[directive_index++] = p_directive;
+	}
+	fclose(file);
 	return 0;
 }
 
@@ -126,22 +164,24 @@ int init_input_file(char *input_file)
 {
 	FILE * file = fopen(input_file, "r");
 	if (file == NULL) {
+		fclose(file);
 		return -1;
 	}
 	line_num = 0;
 	int errno;
 
 	while (!feof(file)) {
-		char str[100];
-		fscanf(file, "%[^\n]", str);
+		char str[100] = { 0 };
+		if (fscanf(file, "%[^\n]", str) == -1)
+			continue;
 		fgetc(file);
 
-		char* d_str = malloc(sizeof(char) * strlen(str));
+		char* d_str = calloc(sizeof(char) * strlen(str), 1);
 		strcpy(d_str, str);
 		input_data[line_num++] = d_str;
-		token_parsing(d_str);
 	}
 	
+	fclose(file);
 	return errno;
 }
 
@@ -155,24 +195,117 @@ int init_input_file(char *input_file)
  */
 int token_parsing(char *str) 
 {
-	token* newToken = malloc(sizeof(token));
+	token* newToken = calloc(sizeof(token), 1);
 
 	// str 내 읽어들일 글자 인덱스
 	int index = 0;
 
-	// Label
+	// 레이블 존재 유무 판단
 	if (str[index] != '\t') {
 		sscanf(str, "%s", newToken->label);
+		if (newToken->label[0] == '.') {
+			free(newToken);
+			return 0;
+		}
 		index += strlen(newToken->label);
 	}
 
 	index++;
-	sscanf(str + index, "%s", newToken->operator);
-	index += (strlen(newToken->operator) + 1);
+	
+	newToken->instIndex = search_opcode(str, newToken->operator);
+	if (newToken->instIndex >= 0) {
+		newToken->directiveIndex = -1;
 
-	sscanf(str + index, "%s\t%[^\n]", newToken->operand[0], newToken->comment);
+		index += (strlen(newToken->operator) + 1);
+
+		if (inst_table[newToken->instIndex]->operandCount > 0) {
+			if (readOperand(str, newToken->operand[0]) == -1)
+				return -1;
+
+			newToken->operandCount = 1;
+			while (split(newToken->operand[newToken->operandCount - 1], newToken->operand[newToken->operandCount], ',') != -1)
+				newToken->operandCount++;
+		}
+	}
+	else {
+		int directive_index = search_directive(str);
+		if (directive_index >= 0) {
+			newToken->instIndex = -1;
+			strcpy(newToken->operator, directive_table[directive_index]->name);
+			if (directive_table[directive_index]->operandCount > 0) {
+				if (readOperand(str, newToken->operand[0]) == -1)
+					return -1;
+
+				newToken->operandCount = 1;
+				while (split(newToken->operand[newToken->operandCount - 1], newToken->operand[newToken->operandCount], ',') != -1)
+					newToken->operandCount++;
+			}
+		}
+		// 명령어도, 지시어도 아닌 상황
+		else {
+
+		}
+	}
 
 	token_table[token_line++] = newToken;
+	
+	return 0;
+}
+
+int split(char* srcStr, char* dstStr, char token) {
+	int length = strlen(srcStr);
+	int i;
+	for (i = 0; srcStr[i] != token && srcStr[i] != '\0'; i++);
+
+	if (srcStr[i] == '\0')
+		return -1;
+	
+
+
+	srcStr[i] = '\0';
+	int j;
+	for (j = 0; i + 1 + j < length && srcStr[i + 1 + j] != '\0'; j++) {
+		dstStr[j] = srcStr[i + 1 + j];
+	}
+	dstStr[j] = '\0';
+	return 0;
+}
+
+int readOperand(const char* str, char* strForSave) {
+	int skipIndex = skipPastBlank(str);
+	if (skipIndex == -1)
+		return -1;
+
+	str += skipIndex;
+
+	skipIndex = skipPastBlank(str);
+	if (skipIndex == -1)
+		return -1;
+
+	str += skipIndex;
+
+	sscanf(str, "%[^\t]", strForSave);
+	
+	return 0;
+}
+
+int indexOf(char* str, char c) {
+	for (int i = 0; str[i] != '\0'; i++) {
+		if (str[i] == c)
+			return i;
+	}
+	return -1;
+}
+
+int skipPastBlank(char* str) {
+	int count = 0;
+	while (str[count] != '\t') {
+		if (str[count] == '\n' || str[count] == '\0')
+			return -1;
+
+		count++;
+	}
+	return count + 1;
 }
 
 /*
@@ -200,10 +333,78 @@ int isEqualString(const char* str1, const char* str2) {
  *		
  * ----------------------------------------------------------------------------------
  */
-int search_opcode(char *str) 
+int search_opcode(char *str, char* op) 
 {
-	/* add your code here */
+	int skipIndex = skipPastBlank(str);
+	if (skipIndex == -1)
+		return -1;
 
+	str += skipIndex;
+
+	sscanf(str, "%s", op);
+	int format = 0;
+	if (str[0] == '+') {
+		format = 4;
+		op++;
+	}
+
+	for (int i = 0; i < inst_index; i++) {
+		if (isEqualString(inst_table[i]->name, op)) {
+			if (format == 4) {
+				if (inst_table[i]->format == 3) {
+					return i;
+				}
+			}
+			else {
+				return i;
+			}
+		}
+	}
+
+	// 찾지 못함
+	return -1;
+}
+
+int is_extend(char *str)
+{
+	int skipIndex = skipPastBlank(str);
+	if (skipIndex == -1)
+		return -1;
+
+	str += skipIndex;
+
+	if (str[0] == '+') {
+		return 1;
+	}
+	return 0;
+}
+
+/* ----------------------------------------------------------------------------------
+ * 설명 : 입력 문자열이 어셈블러 지시어인지를 검사하는 함수이다.
+ * 매계 : 토큰 단위로 구분된 문자열
+ * 반환 : 정상종료 = 지시어 테이블 인덱스, 지시어 아님 = -1, 에러 < -1
+ * 주의 :
+ *
+ * ----------------------------------------------------------------------------------
+ */
+int search_directive(char *str)
+{
+	int skipIndex = skipPastBlank(str);
+	if (skipIndex == -1)
+		return -1;
+
+	str += skipIndex;
+
+	char directive[20];
+	sscanf(str, "%s", directive);
+	for (int i = 0; i < directive_index; i++) {
+		if (isEqualString(directive_table[i]->name, directive)) {
+			return i;
+		}
+	}
+
+	// 찾지 못함
+	return -1;
 }
 
 /* ----------------------------------------------------------------------------------
@@ -221,8 +422,9 @@ int search_opcode(char *str)
 */
 static int assem_pass1(void)
 {
-	/* add your code here */
-
+	for (int i = 0; i < line_num; i++) {
+		token_parsing(input_data[i]);
+	}
 	/* input_data의 문자열을 한줄씩 입력 받아서 
 	 * token_parsing()을 호출하여 token_unit에 저장
 	 */
@@ -242,8 +444,36 @@ static int assem_pass1(void)
 */
 void make_opcode_output(char *file_name)
 {
-	/* add your code here */
+	// 표준 출력
+	if (file_name == NULL) {
+		for (int i = 0; i < token_line; i++) {
+			printf("%s\t%s\t%s", token_table[i]->label, token_table[i]->operator, token_table[i]->operand[0]);
+			for (int j = 1; j < token_table[i]->operandCount; j++)
+				printf(",%s", token_table[i]->operand[j]);
+			printf("\t");
+			if (token_table[i]->instIndex >= 0)
+				printf("%02X", inst_table[token_table[i]->instIndex]->opcode);
+			printf("\n");
+		}
+		return;
+	}
 
+	FILE* file = fopen(file_name, "w");
+	if (file == NULL) {
+		fclose(file);
+		return;
+	}
+
+	for (int i = 0; i < token_line; i++) {
+		fprintf(file, "%s\t%s\t%s", token_table[i]->label, token_table[i]->operator, token_table[i]->operand[0]);
+		for (int j = 1; j < token_table[i]->operandCount; j++)
+			fprintf(file, ",%s", token_table[i]->operand[j]);
+		fprintf(file, "\t");
+		if (token_table[i]->instIndex >= 0)
+			fprintf(file, "%02X", inst_table[token_table[i]->instIndex]->opcode);
+		fprintf(file, "\n");
+	}
+	fclose(file);
 }
 
 /* --------------------------------------------------------------------------------*
