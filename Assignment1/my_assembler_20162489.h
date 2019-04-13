@@ -78,17 +78,16 @@ int init_my_assembler(void);
 int init_inst_file(char *inst_file);
 int init_input_file(char *input_file);
 int token_parsing(char *str);
-int search_opcode(char *str);
+int search_opcode(char *str, char* op);
 static int assem_pass1(void);
 void make_opcode_output(char *file_name);
 
 // 새로 정의한 함수
 int init_directive_file(char *directive_file);
 int search_directive(char *str);
-int readOperand(const char* str, char* string_array_for_save);
-int skipPastBlank(char* str);
-int indexOf(char* str, char c);
-int is_extend(char *str);
+int read_operand(const char* str, char* string_array_for_save);
+int skip_past_blank (char* str);
+int is_equal_string(const char* str1, const char* str2);
 
 /* 추후 프로젝트에서 사용하게 되는 함수*/
 void make_symtab_output(char *file_name);

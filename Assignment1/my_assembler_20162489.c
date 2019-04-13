@@ -18,8 +18,6 @@
 
 #include "my_assembler_20162489.h"
 
-int isEqualString(const char* str1, const char* str2);
-
 /* ----------------------------------------------------------------------------------
  * 설명 : 사용자로 부터 어셈블리 파일을 받아서 명령어의 OPCODE를 찾아 출력한다.
  * 매계 : 실행 파일, 어셈블리 파일 
@@ -98,8 +96,7 @@ int init_inst_file(char *inst_file)
 		fclose(file);
 		return -1;
 	}
-	int errno;
-	
+
 	while (!feof(file)) {
 		inst* p_inst = calloc(sizeof(inst), 1);
 
@@ -131,7 +128,6 @@ int init_directive_file(char *directive_file)
 		fclose(file);
 		return -1;
 	}
-	int errno;
 
 	while (!feof(file)) {
 		directive* p_directive = calloc(sizeof(directive), 1);
@@ -168,7 +164,6 @@ int init_input_file(char *input_file)
 		return -1;
 	}
 	line_num = 0;
-	int errno;
 
 	while (!feof(file)) {
 		char str[100] = { 0 };
@@ -182,7 +177,7 @@ int init_input_file(char *input_file)
 	}
 	
 	fclose(file);
-	return errno;
+	return 0;
 }
 
 /* ----------------------------------------------------------------------------------
@@ -197,45 +192,52 @@ int token_parsing(char *str)
 {
 	token* newToken = calloc(sizeof(token), 1);
 
-	// str 내 읽어들일 글자 인덱스
-	int index = 0;
-
 	// 레이블 존재 유무 판단
-	if (str[index] != '\t') {
+	if (str[0] != '\t') {
 		sscanf(str, "%s", newToken->label);
+
+		// 주석문이면 무시
 		if (newToken->label[0] == '.') {
 			free(newToken);
 			return 0;
 		}
-		index += strlen(newToken->label);
 	}
 
-	index++;
-	
+	// 명령어 여부 검사
 	newToken->instIndex = search_opcode(str, newToken->operator);
 	if (newToken->instIndex >= 0) {
+		// 명령어가 맞으므로 지시어가 아님을 표현하기 위해 directiveIndex를 -1로 초기화
 		newToken->directiveIndex = -1;
 
-		index += (strlen(newToken->operator) + 1);
-
+		// 피연산자를 입력받는 연산자인지 체크
 		if (inst_table[newToken->instIndex]->operandCount > 0) {
-			if (readOperand(str, newToken->operand[0]) == -1)
+			if (read_operand(str, newToken->operand[0]) == -1)
 				return -1;
 
+			// 피연산자를 입력받고, ','(쉼표)로 구분하여 여러개의 피연산자가 지정된 경우
+			// 이들 각각을 operand[index]에 나누어 저장
 			newToken->operandCount = 1;
 			while (split(newToken->operand[newToken->operandCount - 1], newToken->operand[newToken->operandCount], ',') != -1)
 				newToken->operandCount++;
 		}
 	}
+
+	// 명령어가 아님
 	else {
+		// 지시어 여부 검사
 		int directive_index = search_directive(str);
 		if (directive_index >= 0) {
+			// 지시어가 맞으므로 명령어가 아님을 표현하기 위해 instIndex를 -1로 초기화
 			newToken->instIndex = -1;
 			strcpy(newToken->operator, directive_table[directive_index]->name);
+
+			// 피연산자를 입력받는 지시어인지 체크
 			if (directive_table[directive_index]->operandCount > 0) {
-				if (readOperand(str, newToken->operand[0]) == -1)
+				if (read_operand(str, newToken->operand[0]) == -1)
 					return -1;
 
+				// 피연산자를 입력받고, ','(쉼표)로 구분하여 여러개의 피연산자가 지정된 경우
+				// 이들 각각을 operand[index]에 나누어 저장
 				newToken->operandCount = 1;
 				while (split(newToken->operand[newToken->operandCount - 1], newToken->operand[newToken->operandCount], ',') != -1)
 					newToken->operandCount++;
@@ -243,15 +245,21 @@ int token_parsing(char *str)
 		}
 		// 명령어도, 지시어도 아닌 상황
 		else {
-
+			// TODO: 알 수 없는 키워드 에러 처리
 		}
 	}
-
 	token_table[token_line++] = newToken;
-	
 	return 0;
 }
 
+/*
+* 설명 : 문자열을 특정 문자(토큰)를 기준으로 자르는 함수이다.
+* 매개 : srcStr = 자를 문자열. 함수 실행 후 토큰을 기준으로 좌측에 위치한 문자열이 저장된다.
+*		dstStr = 함수 실행 후 토큰을 기준으로 우측에 위치한 문자열이 저장된다.
+*		token = 문자열을 자르는 기준이 되는 문자
+* 반환 : ( -1 ) = 문자열 내에 토큰 문자가 없을때
+*		( 0 ) = 성공적으로 잘라내었을 때
+*/
 int split(char* srcStr, char* dstStr, char token) {
 	int length = strlen(srcStr);
 	int i;
@@ -259,8 +267,6 @@ int split(char* srcStr, char* dstStr, char token) {
 
 	if (srcStr[i] == '\0')
 		return -1;
-	
-
 
 	srcStr[i] = '\0';
 	int j;
@@ -271,33 +277,35 @@ int split(char* srcStr, char* dstStr, char token) {
 	return 0;
 }
 
-int readOperand(const char* str, char* strForSave) {
-	int skipIndex = skipPastBlank(str);
-	if (skipIndex == -1)
+/*
+* 설명 : 피연산자를 읽어들이는 함수이다.
+* 매개 : str = 토큰(\n)으로 구분된 문자열, str_for_save = 명령어가 저장될 문자열
+* 반환 : ( -1 ) = 오류 발생
+*		( 0 ) = 정상종료
+*/
+int read_operand(const char* str, char* str_for_save) {
+	int skip_index = skip_past_blank(str);
+	if (skip_index == -1)
 		return -1;
 
-	str += skipIndex;
+	str += skip_index;
 
-	skipIndex = skipPastBlank(str);
-	if (skipIndex == -1)
+	skip_index = skip_past_blank(str);
+	if (skip_index == -1)
 		return -1;
 
-	str += skipIndex;
-
-	sscanf(str, "%[^\t]", strForSave);
-	
+	str += skip_index;
+	sscanf(str, "%s", str_for_save);
 	return 0;
 }
 
-int indexOf(char* str, char c) {
-	for (int i = 0; str[i] != '\0'; i++) {
-		if (str[i] == c)
-			return i;
-	}
-	return -1;
-}
-
-int skipPastBlank(char* str) {
+/*
+* 설명 : 문자열 왼쪽 맨 끝에 있는 \t 문자를 모두 건너뛰기 위한 함수이다.
+* 매개 : \t 건너뛰기를 원하는 문자열
+* 반환 : 정상종료 = \t가 아닌 문자가 처음으로 나오는 인덱스
+*		\t가 없는 경우 = ( -1 )
+*/
+int skip_past_blank(char* str) {
 	int count = 0;
 	while (str[count] != '\t') {
 		if (str[count] == '\n' || str[count] == '\0')
@@ -313,7 +321,7 @@ int skipPastBlank(char* str) {
 * 매개 : 비교하고 싶은 문자열
 * 반환 : 같음 = 1, 다름 = 0
 */
-int isEqualString(const char* str1, const char* str2) {
+int is_equal_string(const char* str1, const char* str2) {
 	int length = strlen(str1);
 	if (length != strlen(str2))
 		return 0;
@@ -327,7 +335,7 @@ int isEqualString(const char* str1, const char* str2) {
 
 /* ----------------------------------------------------------------------------------
  * 설명 : 입력 문자열이 기계어 코드인지를 검사하는 함수이다. 
- * 매계 : 토큰 단위로 구분된 문자열 
+ * 매개 : str = 토큰 단위로 구분된 문자열, op = 명렁어 코드를 저장할 문자열(NULL 가능)
  * 반환 : 정상종료 = 기계어 테이블 인덱스, 에러 < 0 
  * 주의 : 
  *		
@@ -335,7 +343,12 @@ int isEqualString(const char* str1, const char* str2) {
  */
 int search_opcode(char *str, char* op) 
 {
-	int skipIndex = skipPastBlank(str);
+	if (op == NULL) {
+		char new_op[20];
+		op = new_op;
+	}
+
+	int skipIndex = skip_past_blank(str);
 	if (skipIndex == -1)
 		return -1;
 
@@ -349,7 +362,7 @@ int search_opcode(char *str, char* op)
 	}
 
 	for (int i = 0; i < inst_index; i++) {
-		if (isEqualString(inst_table[i]->name, op)) {
+		if (is_equal_string(inst_table[i]->name, op)) {
 			if (format == 4) {
 				if (inst_table[i]->format == 3) {
 					return i;
@@ -365,20 +378,6 @@ int search_opcode(char *str, char* op)
 	return -1;
 }
 
-int is_extend(char *str)
-{
-	int skipIndex = skipPastBlank(str);
-	if (skipIndex == -1)
-		return -1;
-
-	str += skipIndex;
-
-	if (str[0] == '+') {
-		return 1;
-	}
-	return 0;
-}
-
 /* ----------------------------------------------------------------------------------
  * 설명 : 입력 문자열이 어셈블러 지시어인지를 검사하는 함수이다.
  * 매계 : 토큰 단위로 구분된 문자열
@@ -389,21 +388,20 @@ int is_extend(char *str)
  */
 int search_directive(char *str)
 {
-	int skipIndex = skipPastBlank(str);
+	// 지시어 위치까지 포인터 이동
+	int skipIndex = skip_past_blank(str);
 	if (skipIndex == -1)
 		return -1;
-
 	str += skipIndex;
 
+	// 지시어 여부 체크
 	char directive[20];
 	sscanf(str, "%s", directive);
 	for (int i = 0; i < directive_index; i++) {
-		if (isEqualString(directive_table[i]->name, directive)) {
+		if (is_equal_string(directive_table[i]->name, directive)) {
 			return i;
 		}
 	}
-
-	// 찾지 못함
 	return -1;
 }
 
@@ -422,13 +420,14 @@ int search_directive(char *str)
 */
 static int assem_pass1(void)
 {
-	for (int i = 0; i < line_num; i++) {
-		token_parsing(input_data[i]);
-	}
-	/* input_data의 문자열을 한줄씩 입력 받아서 
+	/* input_data의 문자열을 한줄씩 입력 받아서
 	 * token_parsing()을 호출하여 token_unit에 저장
 	 */
-
+	for (int i = 0; i < line_num; i++) {
+		if (token_parsing(input_data[i]) < 0)
+			return -1;
+	}
+	return 0;
 }
 
 
@@ -450,14 +449,14 @@ void make_opcode_output(char *file_name)
 			printf("%s\t%s\t%s", token_table[i]->label, token_table[i]->operator, token_table[i]->operand[0]);
 			for (int j = 1; j < token_table[i]->operandCount; j++)
 				printf(",%s", token_table[i]->operand[j]);
-			printf("\t");
 			if (token_table[i]->instIndex >= 0)
-				printf("%02X", inst_table[token_table[i]->instIndex]->opcode);
+				printf("\t%02X", inst_table[token_table[i]->instIndex]->opcode);
 			printf("\n");
 		}
 		return;
 	}
 
+	// 파일 출력
 	FILE* file = fopen(file_name, "w");
 	if (file == NULL) {
 		fclose(file);
@@ -468,9 +467,8 @@ void make_opcode_output(char *file_name)
 		fprintf(file, "%s\t%s\t%s", token_table[i]->label, token_table[i]->operator, token_table[i]->operand[0]);
 		for (int j = 1; j < token_table[i]->operandCount; j++)
 			fprintf(file, ",%s", token_table[i]->operand[j]);
-		fprintf(file, "\t");
 		if (token_table[i]->instIndex >= 0)
-			fprintf(file, "%02X", inst_table[token_table[i]->instIndex]->opcode);
+			fprintf(file, "\t%02X", inst_table[token_table[i]->instIndex]->opcode);
 		fprintf(file, "\n");
 	}
 	fclose(file);
