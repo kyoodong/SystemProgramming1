@@ -85,9 +85,10 @@ void make_opcode_output(char *file_name);
 // 새로 정의한 함수
 int init_directive_file(char *directive_file);
 int search_directive(char *str);
-int read_operand(const char* str, char* string_array_for_save);
+int read_operand(const char* str, char* str_for_save);
 int skip_past_blank (char* str);
 int is_equal_string(const char* str1, const char* str2);
+int split(char* srcStr, char* dstStr, char token);
 
 /* 추후 프로젝트에서 사용하게 되는 함수*/
 void make_symtab_output(char *file_name);

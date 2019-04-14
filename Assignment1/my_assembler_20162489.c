@@ -38,7 +38,7 @@ int main(int args, char *arg[])
 		printf("assem_pass1: 패스1 과정에서 실패하였습니다.  \n") ; 
 		return -1 ; 
 	}
-	make_opcode_output("output_20162489");
+	make_opcode_output(/*"output_20162489"*/ NULL);
 
 	/*
 	* 추후 프로젝트에서 사용되는 부분
