@@ -49,7 +49,7 @@ struct token_unit {
 	int instIndex;
 	int directiveIndex;
 	int operandCount;
-	//char nixbpe; // 추후 프로젝트에서 사용된다.
+	char nixbpe;
 };
 
 typedef struct token_unit token; 
@@ -68,6 +68,7 @@ struct symbol_unit {
 
 typedef struct symbol_unit symbol;
 symbol sym_table[MAX_LINES];
+static int symbolIndex;
 
 static int locctr;
 //--------------
@@ -90,7 +91,6 @@ int skip_past_blank (char* str);
 int is_equal_string(const char* str1, const char* str2);
 int split(char* srcStr, char* dstStr, char token);
 
-/* 추후 프로젝트에서 사용하게 되는 함수*/
 void make_symtab_output(char *file_name);
 static int assem_pass2(void);
 void make_objectcode_output(char *file_name);

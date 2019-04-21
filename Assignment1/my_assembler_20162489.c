@@ -38,19 +38,14 @@ int main(int args, char *arg[])
 		printf("assem_pass1: 패스1 과정에서 실패하였습니다.  \n") ; 
 		return -1 ; 
 	}
-	make_opcode_output(/*"output_20162489"*/ NULL);
 
-	/*
-	* 추후 프로젝트에서 사용되는 부분
-	
-	make_symtab_output("symtab_00000000");
-	if(assem_pass2() < 0 ){
-		printf(" assem_pass2: 패스2 과정에서 실패하였습니다.  \n") ; 
-		return -1 ; 
+	make_symtab_output("symtab_20162489");
+	if (assem_pass2() < 0) {
+		printf(" assem_pass2: 패스2 과정에서 실패하였습니다.  \n");
+		return -1;
 	}
 
-	make_objectcode_output("output_00000000") ; 
-	*/
+	make_objectcode_output("output_20162489");
 	return 0;
 }
 
@@ -196,6 +191,13 @@ int token_parsing(char *str)
 	if (str[0] != '\t') {
 		sscanf(str, "%s", newToken->label);
 
+		// 심볼 추가
+		symbol newSymbol;
+		strcpy()
+		strcpy(newSymbol.symbol, newToken->label);
+		newSymbol.addr = locctr;
+		sym_table[symbolIndex++] = newSymbol;
+
 		// 주석문이면 무시
 		if (newToken->label[0] == '.') {
 			free(newToken);
@@ -220,6 +222,18 @@ int token_parsing(char *str)
 			while (split(newToken->operand[newToken->operandCount - 1], newToken->operand[newToken->operandCount], ',') != -1)
 				newToken->operandCount++;
 		}
+
+		// 1, 2형식
+		if (inst_table[newToken->instIndex]->format < 3)
+			locctr += inst_table[newToken->instIndex]->format;
+
+		// 4형식
+		else if (newToken->operator[0] == '+')
+			locctr += 4;
+
+		// 3형식
+		else
+			locctr += 3;
 	}
 
 	// 명령어가 아님
@@ -490,8 +504,20 @@ void make_opcode_output(char *file_name)
 */
 void make_symtab_output(char *file_name)
 {
-	/* add your code here */
+	// 표준 입출력
+	if (file_name == NULL) {
 
+		return;
+	}
+
+	// 파일 입출력
+	FILE* file = fopen(file_name, "w");
+	if (file == NULL) {
+		printf("%s 파일 생성 에러\n", file_name);
+		return;
+	}
+
+	fclose(file);
 }
 
 /* ----------------------------------------------------------------------------------
