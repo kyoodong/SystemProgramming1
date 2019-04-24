@@ -39,7 +39,7 @@ int main(int args, char *arg[])
 		return -1 ; 
 	}
 
-	make_symtab_output("symtab_20162489");
+	make_symtab_output(/*"symtab_20162489"*/ NULL);
 	if (assem_pass2() < 0) {
 		printf(" assem_pass2: 패스2 과정에서 실패하였습니다.  \n");
 		return -1;
@@ -62,8 +62,6 @@ int init_my_assembler(void)
 {
 	int result ; 
 
-	if ((result = init_directive_file("directive.data")) < 0)
-		return -1;
 	if((result = init_inst_file("inst.data")) < 0 )
 		return -1 ;
 	if((result = init_input_file("input.txt")) < 0 )
@@ -112,38 +110,6 @@ int init_inst_file(char *inst_file)
 }
 
 /* ----------------------------------------------------------------------------------
- * 설명 : 어셈블러 지시어 목록 파일을 읽어 지시어 목록 테이블(directive_table)을 생성하는 함수이다.
- * 매계 : 지시어 목록 파일
- * 반환 : 정상종료 = 0 , 에러 < 0
- */
-int init_directive_file(char *directive_file)
-{
-	FILE * file = fopen(directive_file, "r");
-	if (file == NULL) {
-		fclose(file);
-		return -1;
-	}
-
-	while (!feof(file)) {
-		directive* p_directive = calloc(sizeof(directive), 1);
-
-		// 형식에 맞춰서 읽어들임
-		if (fscanf(file, "%s %d", p_directive->name, &p_directive->operandCount) != 2) {
-			// 형식에 맞지 않은 경우 지금까지 읽었던 데이터를 모두 메모리 해제
-			for (int i = 0; i < directive_index; i++) {
-				free(directive_table[i]);
-			}
-			directive_index = 0;
-			fclose(file);
-			return -2;
-		}
-		directive_table[directive_index++] = p_directive;
-	}
-	fclose(file);
-	return 0;
-}
-
-/* ----------------------------------------------------------------------------------
  * 설명 : 어셈블리 할 소스코드를 읽어 소스코드 테이블(input_data)를 생성하는 함수이다. 
  * 매계 : 어셈블리할 소스파일명
  * 반환 : 정상종료 = 0 , 에러 < 0  
@@ -179,7 +145,7 @@ int init_input_file(char *input_file)
  * 설명 : 소스 코드를 읽어와 토큰단위로 분석하고 토큰 테이블을 작성하는 함수이다. 
  *        패스 1로 부터 호출된다. 
  * 매계 : 파싱을 원하는 문자열  
- * 반환 : 정상종료 = 0 , 에러 < 0 
+ * 반환 : 정상종료 = 0, 에러 < 0 
  * 주의 : my_assembler 프로그램에서는 라인단위로 토큰 및 오브젝트 관리를 하고 있다. 
  * ----------------------------------------------------------------------------------
  */
@@ -191,13 +157,6 @@ int token_parsing(char *str)
 	if (str[0] != '\t') {
 		sscanf(str, "%s", newToken->label);
 
-		// 심볼 추가
-		symbol newSymbol;
-		strcpy()
-		strcpy(newSymbol.symbol, newToken->label);
-		newSymbol.addr = locctr;
-		sym_table[symbolIndex++] = newSymbol;
-
 		// 주석문이면 무시
 		if (newToken->label[0] == '.') {
 			free(newToken);
@@ -205,65 +164,90 @@ int token_parsing(char *str)
 		}
 	}
 
-	// 명령어 여부 검사
-	newToken->instIndex = search_opcode(str, newToken->operator);
-	if (newToken->instIndex >= 0) {
-		// 명령어가 맞으므로 지시어가 아님을 표현하기 위해 directiveIndex를 -1로 초기화
-		newToken->directiveIndex = -1;
+	read_operator(str, newToken->operator);
 
-		// 피연산자를 입력받는 연산자인지 체크
-		if (inst_table[newToken->instIndex]->operandCount > 0) {
-			if (read_operand(str, newToken->operand[0]) == -1)
-				return -1;
-
-			// 피연산자를 입력받고, ','(쉼표)로 구분하여 여러개의 피연산자가 지정된 경우
-			// 이들 각각을 operand[index]에 나누어 저장
-			newToken->operandCount = 1;
-			while (split(newToken->operand[newToken->operandCount - 1], newToken->operand[newToken->operandCount], ',') != -1)
-				newToken->operandCount++;
-		}
-
-		// 1, 2형식
-		if (inst_table[newToken->instIndex]->format < 3)
-			locctr += inst_table[newToken->instIndex]->format;
-
-		// 4형식
-		else if (newToken->operator[0] == '+')
-			locctr += 4;
-
-		// 3형식
-		else
-			locctr += 3;
+	if (read_operand(str, newToken->operand[0]) == -1) {
+		token_table[token_line++] = newToken;
+		return 0;
 	}
 
-	// 명령어가 아님
-	else {
-		// 지시어 여부 검사
-		int directive_index = search_directive(str);
-		if (directive_index >= 0) {
-			// 지시어가 맞으므로 명령어가 아님을 표현하기 위해 instIndex를 -1로 초기화
-			newToken->instIndex = -1;
-			strcpy(newToken->operator, directive_table[directive_index]->name);
+	// 피연산자를 입력받고, ','(쉼표)로 구분하여 여러개의 피연산자가 지정된 경우
+	// 이들 각각을 operand[index]에 나누어 저장
+	newToken->operandCount = 1;
+	while (split(newToken->operand[newToken->operandCount - 1], newToken->operand[newToken->operandCount], ',') != -1)
+		newToken->operandCount++;
 
-			// 피연산자를 입력받는 지시어인지 체크
-			if (directive_table[directive_index]->operandCount > 0) {
-				if (read_operand(str, newToken->operand[0]) == -1)
-					return -1;
-
-				// 피연산자를 입력받고, ','(쉼표)로 구분하여 여러개의 피연산자가 지정된 경우
-				// 이들 각각을 operand[index]에 나누어 저장
-				newToken->operandCount = 1;
-				while (split(newToken->operand[newToken->operandCount - 1], newToken->operand[newToken->operandCount], ',') != -1)
-					newToken->operandCount++;
-			}
-		}
-		// 명령어도, 지시어도 아닌 상황
-		else {
-			// TODO: 알 수 없는 키워드 에러 처리
-		}
-	}
 	token_table[token_line++] = newToken;
 	return 0;
+}
+
+/*
+* 설명 : 아직 주소값이 할당되지 않은 리터럴을 찾아주는 함수이다.
+* 매개 : name = 리터럴 이름
+* 반환 : ( -1 ) = 주소값이 할당되지 않은 리터럴이 없음
+*		( n ) = 리터럴 인덱스
+*/
+int search_unassigned_literal() {
+	for (int i = 0; i < literalIndex; i++) {
+		if (literal_table[i].addr == -1)
+			return i;
+	}
+	return -1;
+}
+
+/*
+* 설명 : 심볼 테이블에서 심볼을 검색하는 함수이다.
+* 매개 : name = 심볼 이름
+*		csect = 심볼이 속한 control section
+* 반환 : ( -1 ) = 심볼 테이블에 없음
+*		( n ) = 심볼 테이블 내 인덱스
+*/
+int search_symbol(const char* name, const char* csect) {
+	for (int i = 0; i < symbolIndex; i++) {
+		if (!strcmp(name, sym_table[i].symbol) && !strcmp(csect, sym_table[i].csect))
+			return i;
+	}
+	return -1;
+}
+
+/*
+* 설명 : 심볼 테이블에 심볼을 추가해주는 함수이다.
+* 매개 : name = 심볼 이름
+*		csect = 심볼이 속한 control section
+*		address = 주소값
+* 반환 : ( 1 ) = 심볼 테이블에 잘 추가됨
+*		( 0 ) = 심볼 테이블에 추가 중 에러 발생
+*/
+int insert_symbol(const char* name, const char* csect, int address) {
+	// 이미 있는 심볼
+	if (search_symbol(name, csect) != -1)
+		return 0;
+
+	symbol newSymbol;
+	strcpy(newSymbol.csect, csect);
+	strcpy(newSymbol.symbol, name);
+	newSymbol.addr = address;
+	sym_table[symbolIndex++] = newSymbol;
+	return 1;
+}
+
+int insert_literal(const char* name) {
+	if (search_literal(name) != -1)
+		return -1;
+
+	literal lit;
+	strcpy(lit.name, name);
+	lit.addr = -1;
+	literal_table[literalIndex++] = lit;
+}
+
+int search_literal(const char* name) {
+	for (int i = 0; i < literalIndex; i++) {
+		if (!strcmp(name, literal_table[i].name))
+			return i;
+	}
+
+	return -1;
 }
 
 /*
@@ -319,7 +303,7 @@ int read_operand(const char* str, char* str_for_save) {
 * 반환 : 정상종료 = \t가 아닌 문자가 처음으로 나오는 인덱스
 *		\t가 없는 경우 = ( -1 )
 */
-int skip_past_blank(char* str) {
+int skip_past_blank(const char* str) {
 	int count = 0;
 	while (str[count] != '\t') {
 		if (str[count] == '\n' || str[count] == '\0')
@@ -330,53 +314,27 @@ int skip_past_blank(char* str) {
 	return count + 1;
 }
 
-/*
-* 설명 : 두 문자열이 같은지 비교하는 함수이다.
-* 매개 : 비교하고 싶은 문자열
-* 반환 : 같음 = 1, 다름 = 0
-*/
-int is_equal_string(const char* str1, const char* str2) {
-	int length = strlen(str1);
-	if (length != strlen(str2))
-		return 0;
-
-	for (int i = 0; i < length; i++) {
-		if (str1[i] != str2[i])
-			return 0;
-	}
-	return 1;
-}
-
 /* ----------------------------------------------------------------------------------
  * 설명 : 입력 문자열이 기계어 코드인지를 검사하는 함수이다. 
- * 매개 : str = 토큰 단위로 구분된 문자열, op = 명렁어 코드를 저장할 문자열(NULL 가능)
+ * 매개 : str = 토큰 단위로 구분된 문자열
  * 반환 : 정상종료 = 기계어 테이블 인덱스, 에러 < 0 
  * 주의 : 
  *		
  * ----------------------------------------------------------------------------------
  */
-int search_opcode(char *str, char* op) 
+int search_opcode(char *str) 
 {
-	if (op == NULL) {
-		char new_op[20];
-		op = new_op;
-	}
-
-	int skipIndex = skip_past_blank(str);
-	if (skipIndex == -1)
-		return -1;
-
-	str += skipIndex;
-
+	char op[20];
 	sscanf(str, "%s", op);
 	int format = 0;
+	int index = 0;
 	if (str[0] == '+') {
 		format = 4;
-		op++;
+		index++;
 	}
 
 	for (int i = 0; i < inst_index; i++) {
-		if (is_equal_string(inst_table[i]->name, op)) {
+		if (!strcmp(inst_table[i]->name, op + index)) {
 			if (format == 4) {
 				if (inst_table[i]->format == 3) {
 					return i;
@@ -389,33 +347,6 @@ int search_opcode(char *str, char* op)
 	}
 
 	// 찾지 못함
-	return -1;
-}
-
-/* ----------------------------------------------------------------------------------
- * 설명 : 입력 문자열이 어셈블러 지시어인지를 검사하는 함수이다.
- * 매계 : 토큰 단위로 구분된 문자열
- * 반환 : 정상종료 = 지시어 테이블 인덱스, 지시어 아님 = -1, 에러 < -1
- * 주의 :
- *
- * ----------------------------------------------------------------------------------
- */
-int search_directive(char *str)
-{
-	// 지시어 위치까지 포인터 이동
-	int skipIndex = skip_past_blank(str);
-	if (skipIndex == -1)
-		return -1;
-	str += skipIndex;
-
-	// 지시어 여부 체크
-	char directive[20];
-	sscanf(str, "%s", directive);
-	for (int i = 0; i < directive_index; i++) {
-		if (is_equal_string(directive_table[i]->name, directive)) {
-			return i;
-		}
-	}
 	return -1;
 }
 
@@ -441,51 +372,141 @@ static int assem_pass1(void)
 		if (token_parsing(input_data[i]) < 0)
 			return -1;
 	}
+
+	for (int i = 0; i < token_line; i++) {
+		token t = *token_table[i];
+
+		if (strlen(t.label) > 0 && strcmp(t.operator, "CSECT")) {
+			if (!insert_symbol(t.label, currentCsect, locctr))
+				return -1;
+		}
+
+		int instIndex = -1;
+		// 명령어
+		if ((instIndex = search_opcode(t.operator)) != -1) {
+			// 리터럴
+			if (t.operand[0][0] == '=') {
+				insert_literal(t.operand[0]);
+			}
+
+			// 1, 2형식
+			if (inst_table[instIndex]->format < 3)
+				locctr += inst_table[instIndex]->format;
+
+			// 4형식
+			else if (t.operator[0] == '+')
+				locctr += 4;
+
+			// 3형식
+			else
+				locctr += 3;
+		}
+		// 지시어 여부 검사
+		else if (!strcmp(t.operator, "RESW")) {
+			int size = atoi(t.operand[0]);
+			locctr += 3 * size;
+		}
+		else if (!strcmp(t.operator, "RESB")) {
+			int size = atoi(t.operand[0]);
+			locctr += size;
+		}
+		else if (!strcmp(t.operator, "BYTE")) {
+			// 16진수
+			if (t.operand[0] == 'X') {
+
+			}
+
+			// TODO: locctr 값 올라가는거 수정해야함
+			locctr++;
+		}
+		else if (!strcmp(t.operator, "WORD")) {
+			// TODO: locctr 값 올라가는거 수정해야함
+			locctr += 3;
+		}
+		else if (!strcmp(t.operator, "START")) {
+			// Csect 설정
+			strcpy(currentCsect, t.label);
+
+			int startAddress = atoi(t.operand[0]);
+			locctr = startAddress;
+		}
+		else if (!strcmp(t.operator, "END")) {
+			// 프로그램 시작 주소 명시한 케이스
+		}
+		else if (!strcmp(t.operator, "BASE")) {
+			// TODO: BASE 처리
+			int startAddress = atoi(t.operand[0]);
+			locctr = startAddress;
+		}
+		else if (!strcmp(t.operator, "EQU")) {
+
+		}
+		else if (!strcmp(t.operator, "ORG")) {
+
+		}
+		else if (!strcmp(t.operator, "LTORG")) {
+			int index;
+			while ((index = search_unassigned_literal()) != -1) {
+				literal_table[index].addr = locctr;
+
+				if (literal_table[index].name[1] == 'C') {
+					int size = 0;
+
+					for (int t = 3; literal_table[index].name[t] != '\''; t++, size++);
+					locctr += size;
+				}
+				else if (literal_table[index].name[1] == 'X') {
+					int size = 0;
+
+					for (int t = 3; literal_table[index].name[t] != '\''; t++, size++);
+					locctr += size / 2;
+				}
+			}
+		}
+		else if (!strcmp(t.operator, "EXTDEF")) {
+			// 피연산자를 입력받고, ','(쉼표)로 구분하여 여러개의 피연산자가 지정된 경우
+			// 이들 각각을 operand[index]에 나누어 저장
+			t.operandCount = 1;
+			while (split(t.operand[t.operandCount - 1], t.operand[t.operandCount], ',') != -1)
+				t.operandCount++;
+		}
+		else if (!strcmp(t.operator, "EXTREF")) {
+			// 피연산자를 입력받고, ','(쉼표)로 구분하여 여러개의 피연산자가 지정된 경우
+			// 이들 각각을 operand[index]에 나누어 저장
+			t.operandCount = 1;
+			while (split(t.operand[t.operandCount - 1], t.operand[t.operandCount], ',') != -1)
+				t.operandCount++;
+		}
+		else if (!strcmp(t.operator, "NOBASE")) {
+
+		}
+		else if (!strcmp(t.operator, "USE")) {
+
+		}
+		else if (!strcmp(t.operator, "CSECT")) {
+			strcpy(currentCsect, t.label);
+			objectProgramLength += locctr;
+			locctr = 0;
+
+			if (!insert_symbol(t.label, currentCsect, locctr))
+				return -1;
+		}
+		// 명령어도, 지시어도 아닌 상황
+		else {
+			// TODO: 알 수 없는 키워드 에러 처리
+		}
+	}
 	return 0;
 }
 
+int read_operator(const char* str, char* str_for_save) {
+	int skip_index = skip_past_blank(str);
+	if (skip_index == -1)
+		return -1;
 
-/* ----------------------------------------------------------------------------------
-* 설명 : 입력된 문자열의 이름을 가진 파일에 프로그램의 결과를 저장하는 함수이다.
-*        여기서 출력되는 내용은 명령어 옆에 OPCODE가 기록된 표(과제 4번) 이다.
-* 매계 : 생성할 오브젝트 파일명
-* 반환 : 없음
-* 주의 : 만약 인자로 NULL값이 들어온다면 프로그램의 결과를 표준출력으로 보내어
-*        화면에 출력해준다.
-*        또한 과제 4번에서만 쓰이는 함수이므로 이후의 프로젝트에서는 사용되지 않는다.
-* -----------------------------------------------------------------------------------
-*/
-void make_opcode_output(char *file_name)
-{
-	// 표준 출력
-	if (file_name == NULL) {
-		for (int i = 0; i < token_line; i++) {
-			printf("%s\t%s\t%s", token_table[i]->label, token_table[i]->operator, token_table[i]->operand[0]);
-			for (int j = 1; j < token_table[i]->operandCount; j++)
-				printf(",%s", token_table[i]->operand[j]);
-			if (token_table[i]->instIndex >= 0)
-				printf("\t%02X", inst_table[token_table[i]->instIndex]->opcode);
-			printf("\n");
-		}
-		return;
-	}
-
-	// 파일 출력
-	FILE* file = fopen(file_name, "w");
-	if (file == NULL) {
-		fclose(file);
-		return;
-	}
-
-	for (int i = 0; i < token_line; i++) {
-		fprintf(file, "%s\t%s\t%s", token_table[i]->label, token_table[i]->operator, token_table[i]->operand[0]);
-		for (int j = 1; j < token_table[i]->operandCount; j++)
-			fprintf(file, ",%s", token_table[i]->operand[j]);
-		if (token_table[i]->instIndex >= 0)
-			fprintf(file, "\t%02X", inst_table[token_table[i]->instIndex]->opcode);
-		fprintf(file, "\n");
-	}
-	fclose(file);
+	str += skip_index;
+	sscanf(str, "%s", str_for_save);
+	return 0;
 }
 
 /* --------------------------------------------------------------------------------*
@@ -506,7 +527,9 @@ void make_symtab_output(char *file_name)
 {
 	// 표준 입출력
 	if (file_name == NULL) {
-
+		for (int i = 0; i < symbolIndex; i++) {
+			printf("%s %X\n", sym_table[i].symbol, sym_table[i].addr);
+		}
 		return;
 	}
 

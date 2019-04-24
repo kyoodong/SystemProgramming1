@@ -46,8 +46,6 @@ struct token_unit {
 	char operator[20];
 	char operand[MAX_OPERAND][20];
 	char comment[100];
-	int instIndex;
-	int directiveIndex;
 	int operandCount;
 	char nixbpe;
 };
@@ -58,12 +56,13 @@ static int token_line;
 
 /*
  * 심볼을 관리하는 구조체이다.
- * 심볼 테이블은 심볼 이름, 심볼의 위치로 구성된다.
+ * 심볼 테이블은 심볼 이름, 심볼의 위치, 심볼이 속한 컨트롤섹션으로 구성된다.
  * 추후 프로젝트에서 사용된다.
  */
 struct symbol_unit {
 	char symbol[10];
 	int addr;
+	char csect[10];
 };
 
 typedef struct symbol_unit symbol;
@@ -79,18 +78,38 @@ int init_my_assembler(void);
 int init_inst_file(char *inst_file);
 int init_input_file(char *input_file);
 int token_parsing(char *str);
-int search_opcode(char *str, char* op);
+int search_opcode(char *str);
 static int assem_pass1(void);
-void make_opcode_output(char *file_name);
 
-// 새로 정의한 함수
-int init_directive_file(char *directive_file);
-int search_directive(char *str);
 int read_operand(const char* str, char* str_for_save);
 int skip_past_blank (char* str);
-int is_equal_string(const char* str1, const char* str2);
 int split(char* srcStr, char* dstStr, char token);
 
+// 새로 정의한 함수
+int read_operator(const char* str, char* str_for_save);
+int search_symbol(const char* name, const char* csect);
+int insert_symbol(const char* name, const char* csect, int address);
+int search_unassigned_literal();
+int insert_literal(const char* name);
+int search_literal(const char* name);
+
+char currentCsect[10];
+static int objectProgramLength;
+
+/*
+ * 리터럴을 관리하는 구조체이다.
+ * 리터럴 테이블은 이름, 주소값으로 구성된다.
+ */
+struct literal_unit {
+	char name[10];
+	int addr;
+};
+
+typedef struct literal_unit literal;
+literal literal_table[MAX_LINES];
+static int literalIndex;
+
+///////
 void make_symtab_output(char *file_name);
 static int assem_pass2(void);
 void make_objectcode_output(char *file_name);
