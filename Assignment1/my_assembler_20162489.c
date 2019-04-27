@@ -40,6 +40,7 @@ int main(int args, char *arg[])
 	}
 
 	make_symtab_output(/*"symtab_20162489"*/ NULL);
+
 	if (assem_pass2() < 0) {
 		printf(" assem_pass2: 패스2 과정에서 실패하였습니다.  \n");
 		return -1;
@@ -376,7 +377,7 @@ static int assem_pass1(void)
 	for (int i = 0; i < token_line; i++) {
 		token t = *token_table[i];
 
-		if (strlen(t.label) > 0 && strcmp(t.operator, "CSECT")) {
+		if (strlen(t.label) > 0 && strcmp(t.operator, "CSECT") && strcmp(t.operator, "EQU") && strcmp(t.operator, "START")) {
 			if (!insert_symbol(t.label, currentCsect, locctr))
 				return -1;
 		}
@@ -429,6 +430,9 @@ static int assem_pass1(void)
 
 			int startAddress = atoi(t.operand[0]);
 			locctr = startAddress;
+
+			if (!insert_symbol(t.label, currentCsect, locctr))
+				return -1;
 		}
 		else if (!strcmp(t.operator, "END")) {
 			// 프로그램 시작 주소 명시한 케이스
@@ -439,7 +443,22 @@ static int assem_pass1(void)
 			locctr = startAddress;
 		}
 		else if (!strcmp(t.operator, "EQU")) {
+			if (t.operand[0][0] == '*') {
+				if (!insert_symbol(t.label, currentCsect, locctr))
+					return -1;
+			}
+			else {
+				// BUFFEND - BUFFER 같은 수식 해석
+				char rightOperand[10];
+				split(t.operand[0], rightOperand, '-');
+				int leftSymbolIndex = search_symbol(t.operand[0], currentCsect);
+				int rightSymbolIndex = search_symbol(rightOperand, currentCsect);
 
+				symbol leftSymbol = sym_table[leftSymbolIndex];
+				symbol rightSymbol = sym_table[rightSymbolIndex];
+				
+				insert_symbol(t.label, currentCsect, leftSymbol.addr - rightSymbol.addr);
+			}
 		}
 		else if (!strcmp(t.operator, "ORG")) {
 
@@ -527,7 +546,12 @@ void make_symtab_output(char *file_name)
 {
 	// 표준 입출력
 	if (file_name == NULL) {
+		char curCsect[10];
 		for (int i = 0; i < symbolIndex; i++) {
+			if (strcmp(curCsect, sym_table[i].csect)) {
+				printf("\n");
+				strcpy(curCsect, sym_table[i].csect);
+			}
 			printf("%s %X\n", sym_table[i].symbol, sym_table[i].addr);
 		}
 		return;
