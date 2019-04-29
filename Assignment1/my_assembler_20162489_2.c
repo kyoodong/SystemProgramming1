@@ -1,13 +1,13 @@
-/*
- * È­ÀÏ¸í : my_assembler_00000000.c 
- * ¼³  ¸í : ÀÌ ÇÁ·Î±×·¥Àº SIC/XE ¸Ó½ÅÀ» À§ÇÑ °£´ÜÇÑ Assembler ÇÁ·Î±×·¥ÀÇ ¸ÞÀÎ·çÆ¾À¸·Î,
- * ÀÔ·ÂµÈ ÆÄÀÏÀÇ ÄÚµå Áß, ¸í·É¾î¿¡ ÇØ´çÇÏ´Â OPCODE¸¦ Ã£¾Æ Ãâ·ÂÇÑ´Ù.
- * ÆÄÀÏ ³»¿¡¼­ »ç¿ëµÇ´Â ¹®ÀÚ¿­ "00000000"¿¡´Â ÀÚ½ÅÀÇ ÇÐ¹øÀ» ±âÀÔÇÑ´Ù.
+ï»¿/*
+ * í™”ì¼ëª… : my_assembler_00000000.c 
+ * ì„¤  ëª… : ì´ í”„ë¡œê·¸ëž¨ì€ SIC/XE ë¨¸ì‹ ì„ ìœ„í•œ ê°„ë‹¨í•œ Assembler í”„ë¡œê·¸ëž¨ì˜ ë©”ì¸ë£¨í‹´ìœ¼ë¡œ,
+ * ìž…ë ¥ëœ íŒŒì¼ì˜ ì½”ë“œ ì¤‘, ëª…ë ¹ì–´ì— í•´ë‹¹í•˜ëŠ” OPCODEë¥¼ ì°¾ì•„ ì¶œë ¥í•œë‹¤.
+ * íŒŒì¼ ë‚´ì—ì„œ ì‚¬ìš©ë˜ëŠ” ë¬¸ìžì—´ "00000000"ì—ëŠ” ìžì‹ ì˜ í•™ë²ˆì„ ê¸°ìž…í•œë‹¤.
  */
 
 /*
  *
- * ÇÁ·Î±×·¥ÀÇ Çì´õ¸¦ Á¤ÀÇÇÑ´Ù. 
+ * í”„ë¡œê·¸ëž¨ì˜ í—¤ë”ë¥¼ ì •ì˜í•œë‹¤. 
  *
  */
 
@@ -19,23 +19,23 @@
 #include "my_assembler_20162489.h"
 
 /* ----------------------------------------------------------------------------------
- * ¼³¸í : »ç¿ëÀÚ·Î ºÎÅÍ ¾î¼Àºí¸® ÆÄÀÏÀ» ¹Þ¾Æ¼­ ¸í·É¾îÀÇ OPCODE¸¦ Ã£¾Æ Ãâ·ÂÇÑ´Ù.
- * ¸Å°è : ½ÇÇà ÆÄÀÏ, ¾î¼Àºí¸® ÆÄÀÏ 
- * ¹ÝÈ¯ : ¼º°ø = 0, ½ÇÆÐ = < 0 
- * ÁÖÀÇ : ÇöÀç ¾î¼Àºí¸® ÇÁ·Î±×·¥ÀÇ ¸®½ºÆ® ÆÄÀÏÀ» »ý¼ºÇÏ´Â ·çÆ¾Àº ¸¸µéÁö ¾Ê¾Ò´Ù. 
- *		   ¶ÇÇÑ Áß°£ÆÄÀÏÀ» »ý¼ºÇÏÁö ¾Ê´Â´Ù. 
+ * ì„¤ëª… : ì‚¬ìš©ìžë¡œ ë¶€í„° ì–´ì…ˆë¸”ë¦¬ íŒŒì¼ì„ ë°›ì•„ì„œ ëª…ë ¹ì–´ì˜ OPCODEë¥¼ ì°¾ì•„ ì¶œë ¥í•œë‹¤.
+ * ë§¤ê³„ : ì‹¤í–‰ íŒŒì¼, ì–´ì…ˆë¸”ë¦¬ íŒŒì¼ 
+ * ë°˜í™˜ : ì„±ê³µ = 0, ì‹¤íŒ¨ = < 0 
+ * ì£¼ì˜ : í˜„ìž¬ ì–´ì…ˆë¸”ë¦¬ í”„ë¡œê·¸ëž¨ì˜ ë¦¬ìŠ¤íŠ¸ íŒŒì¼ì„ ìƒì„±í•˜ëŠ” ë£¨í‹´ì€ ë§Œë“¤ì§€ ì•Šì•˜ë‹¤. 
+ *		   ë˜í•œ ì¤‘ê°„íŒŒì¼ì„ ìƒì„±í•˜ì§€ ì•ŠëŠ”ë‹¤. 
  * ----------------------------------------------------------------------------------
  */
 int main(int args, char *arg[]) 
 {
 	if(init_my_assembler()< 0)
 	{
-		printf("init_my_assembler: ÇÁ·Î±×·¥ ÃÊ±âÈ­¿¡ ½ÇÆÐ Çß½À´Ï´Ù.\n"); 
+		printf("init_my_assembler: í”„ë¡œê·¸ëž¨ ì´ˆê¸°í™”ì— ì‹¤íŒ¨ í–ˆìŠµë‹ˆë‹¤.\n"); 
 		return -1 ; 
 	}
 
 	if(assem_pass1() < 0 ){
-		printf("assem_pass1: ÆÐ½º1 °úÁ¤¿¡¼­ ½ÇÆÐÇÏ¿´½À´Ï´Ù.  \n") ; 
+		printf("assem_pass1: íŒ¨ìŠ¤1 ê³¼ì •ì—ì„œ ì‹¤íŒ¨í•˜ì˜€ìŠµë‹ˆë‹¤.  \n") ; 
 		return -1 ; 
 	}
 
@@ -43,7 +43,7 @@ int main(int args, char *arg[])
 
 	int s = assem_pass2();
 	if (s < 0) {
-		printf(" assem_pass2: ÆÐ½º2 °úÁ¤¿¡¼­ ½ÇÆÐÇÏ¿´½À´Ï´Ù. %d \n", s);
+		printf(" assem_pass2: íŒ¨ìŠ¤2 ê³¼ì •ì—ì„œ ì‹¤íŒ¨í•˜ì˜€ìŠµë‹ˆë‹¤. %d \n", s);
 		return -1;
 	}
 
@@ -52,12 +52,12 @@ int main(int args, char *arg[])
 }
 
 /* ----------------------------------------------------------------------------------
- * ¼³¸í : ÇÁ·Î±×·¥ ÃÊ±âÈ­¸¦ À§ÇÑ ÀÚ·á±¸Á¶ »ý¼º ¹× ÆÄÀÏÀ» ÀÐ´Â ÇÔ¼öÀÌ´Ù. 
- * ¸Å°è : ¾øÀ½
- * ¹ÝÈ¯ : Á¤»óÁ¾·á = 0 , ¿¡·¯ ¹ß»ý = -1
- * ÁÖÀÇ : °¢°¢ÀÇ ¸í·É¾î Å×ÀÌºíÀ» ³»ºÎ¿¡ ¼±¾ðÇÏÁö ¾Ê°í °ü¸®¸¦ ¿ëÀÌÇÏ°Ô ÇÏ±â 
- *		   À§ÇØ¼­ ÆÄÀÏ ´ÜÀ§·Î °ü¸®ÇÏ¿© ÇÁ·Î±×·¥ ÃÊ±âÈ­¸¦ ÅëÇØ Á¤º¸¸¦ ÀÐ¾î ¿Ã ¼ö ÀÖµµ·Ï
- *		   ±¸ÇöÇÏ¿´´Ù. 
+ * ì„¤ëª… : í”„ë¡œê·¸ëž¨ ì´ˆê¸°í™”ë¥¼ ìœ„í•œ ìžë£Œêµ¬ì¡° ìƒì„± ë° íŒŒì¼ì„ ì½ëŠ” í•¨ìˆ˜ì´ë‹¤. 
+ * ë§¤ê³„ : ì—†ìŒ
+ * ë°˜í™˜ : ì •ìƒì¢…ë£Œ = 0 , ì—ëŸ¬ ë°œìƒ = -1
+ * ì£¼ì˜ : ê°ê°ì˜ ëª…ë ¹ì–´ í…Œì´ë¸”ì„ ë‚´ë¶€ì— ì„ ì–¸í•˜ì§€ ì•Šê³  ê´€ë¦¬ë¥¼ ìš©ì´í•˜ê²Œ í•˜ê¸° 
+ *		   ìœ„í•´ì„œ íŒŒì¼ ë‹¨ìœ„ë¡œ ê´€ë¦¬í•˜ì—¬ í”„ë¡œê·¸ëž¨ ì´ˆê¸°í™”ë¥¼ í†µí•´ ì •ë³´ë¥¼ ì½ì–´ ì˜¬ ìˆ˜ ìžˆë„ë¡
+ *		   êµ¬í˜„í•˜ì˜€ë‹¤. 
  * ----------------------------------------------------------------------------------
  */
 int init_my_assembler(void)
@@ -72,14 +72,14 @@ int init_my_assembler(void)
 }
 
 /* ----------------------------------------------------------------------------------
- * ¼³¸í : ¸Ó½ÅÀ» À§ÇÑ ±â°è ÄÚµå¸ñ·Ï ÆÄÀÏÀ» ÀÐ¾î ±â°è¾î ¸ñ·Ï Å×ÀÌºí(inst_table)À» 
- *        »ý¼ºÇÏ´Â ÇÔ¼öÀÌ´Ù. 
- * ¸Å°è : ±â°è¾î ¸ñ·Ï ÆÄÀÏ
- * ¹ÝÈ¯ : Á¤»óÁ¾·á = 0 , ¿¡·¯ < 0 
- * ÁÖÀÇ : ±â°è¾î ¸ñ·ÏÆÄÀÏ Çü½ÄÀº ÀÚÀ¯·Ó°Ô ±¸ÇöÇÑ´Ù. ¿¹½Ã´Â ´ÙÀ½°ú °°´Ù.
+ * ì„¤ëª… : ë¨¸ì‹ ì„ ìœ„í•œ ê¸°ê³„ ì½”ë“œëª©ë¡ íŒŒì¼ì„ ì½ì–´ ê¸°ê³„ì–´ ëª©ë¡ í…Œì´ë¸”(inst_table)ì„ 
+ *        ìƒì„±í•˜ëŠ” í•¨ìˆ˜ì´ë‹¤. 
+ * ë§¤ê³„ : ê¸°ê³„ì–´ ëª©ë¡ íŒŒì¼
+ * ë°˜í™˜ : ì •ìƒì¢…ë£Œ = 0 , ì—ëŸ¬ < 0 
+ * ì£¼ì˜ : ê¸°ê³„ì–´ ëª©ë¡íŒŒì¼ í˜•ì‹ì€ ìžìœ ë¡­ê²Œ êµ¬í˜„í•œë‹¤. ì˜ˆì‹œëŠ” ë‹¤ìŒê³¼ ê°™ë‹¤.
  *	
  *	===============================================================================
- *		   | ÀÌ¸§ | Çü½Ä | ±â°è¾î ÄÚµå | ¿ÀÆÛ·£µåÀÇ °¹¼ö | NULL|
+ *		   | ì´ë¦„ | í˜•ì‹ | ê¸°ê³„ì–´ ì½”ë“œ | ì˜¤í¼ëžœë“œì˜ ê°¯ìˆ˜ | NULL|
  *	===============================================================================	   
  *		
  * ----------------------------------------------------------------------------------
@@ -95,9 +95,9 @@ int init_inst_file(char *inst_file)
 	while (!feof(file)) {
 		inst* p_inst = calloc(sizeof(inst), 1);
 
-		// Çü½Ä¿¡ ¸ÂÃç¼­ ÀÐ¾îµéÀÓ
+		// í˜•ì‹ì— ë§žì¶°ì„œ ì½ì–´ë“¤ìž„
 		if (fscanf(file, "%s %d %2hhx %d", p_inst->name, &p_inst->format, &p_inst->opcode, &p_inst->operandCount) != 4) {
-			// Çü½Ä¿¡ ¸ÂÁö ¾ÊÀº °æ¿ì Áö±Ý±îÁö ÀÐ¾ú´ø µ¥ÀÌÅÍ¸¦ ¸ðµÎ ¸Þ¸ð¸® ÇØÁ¦
+			// í˜•ì‹ì— ë§žì§€ ì•Šì€ ê²½ìš° ì§€ê¸ˆê¹Œì§€ ì½ì—ˆë˜ ë°ì´í„°ë¥¼ ëª¨ë‘ ë©”ëª¨ë¦¬ í•´ì œ
 			for (int i = 0; i < inst_index; i++) {
 				free(inst_table[i]);
 			}
@@ -112,10 +112,10 @@ int init_inst_file(char *inst_file)
 }
 
 /* ----------------------------------------------------------------------------------
- * ¼³¸í : ¾î¼Àºí¸® ÇÒ ¼Ò½ºÄÚµå¸¦ ÀÐ¾î ¼Ò½ºÄÚµå Å×ÀÌºí(input_data)¸¦ »ý¼ºÇÏ´Â ÇÔ¼öÀÌ´Ù. 
- * ¸Å°è : ¾î¼Àºí¸®ÇÒ ¼Ò½ºÆÄÀÏ¸í
- * ¹ÝÈ¯ : Á¤»óÁ¾·á = 0 , ¿¡·¯ < 0  
- * ÁÖÀÇ : ¶óÀÎ´ÜÀ§·Î ÀúÀåÇÑ´Ù.
+ * ì„¤ëª… : ì–´ì…ˆë¸”ë¦¬ í•  ì†ŒìŠ¤ì½”ë“œë¥¼ ì½ì–´ ì†ŒìŠ¤ì½”ë“œ í…Œì´ë¸”(input_data)ë¥¼ ìƒì„±í•˜ëŠ” í•¨ìˆ˜ì´ë‹¤. 
+ * ë§¤ê³„ : ì–´ì…ˆë¸”ë¦¬í•  ì†ŒìŠ¤íŒŒì¼ëª…
+ * ë°˜í™˜ : ì •ìƒì¢…ë£Œ = 0 , ì—ëŸ¬ < 0  
+ * ì£¼ì˜ : ë¼ì¸ë‹¨ìœ„ë¡œ ì €ìž¥í•œë‹¤.
  *		
  * ----------------------------------------------------------------------------------
  */
@@ -144,22 +144,22 @@ int init_input_file(char *input_file)
 }
 
 /* ----------------------------------------------------------------------------------
- * ¼³¸í : ¼Ò½º ÄÚµå¸¦ ÀÐ¾î¿Í ÅäÅ«´ÜÀ§·Î ºÐ¼®ÇÏ°í ÅäÅ« Å×ÀÌºíÀ» ÀÛ¼ºÇÏ´Â ÇÔ¼öÀÌ´Ù. 
- *        ÆÐ½º 1·Î ºÎÅÍ È£ÃâµÈ´Ù. 
- * ¸Å°è : ÆÄ½ÌÀ» ¿øÇÏ´Â ¹®ÀÚ¿­  
- * ¹ÝÈ¯ : Á¤»óÁ¾·á = 0, ¿¡·¯ < 0 
- * ÁÖÀÇ : my_assembler ÇÁ·Î±×·¥¿¡¼­´Â ¶óÀÎ´ÜÀ§·Î ÅäÅ« ¹× ¿ÀºêÁ§Æ® °ü¸®¸¦ ÇÏ°í ÀÖ´Ù. 
+ * ì„¤ëª… : ì†ŒìŠ¤ ì½”ë“œë¥¼ ì½ì–´ì™€ í† í°ë‹¨ìœ„ë¡œ ë¶„ì„í•˜ê³  í† í° í…Œì´ë¸”ì„ ìž‘ì„±í•˜ëŠ” í•¨ìˆ˜ì´ë‹¤. 
+ *        íŒ¨ìŠ¤ 1ë¡œ ë¶€í„° í˜¸ì¶œëœë‹¤. 
+ * ë§¤ê³„ : íŒŒì‹±ì„ ì›í•˜ëŠ” ë¬¸ìžì—´  
+ * ë°˜í™˜ : ì •ìƒì¢…ë£Œ = 0, ì—ëŸ¬ < 0 
+ * ì£¼ì˜ : my_assembler í”„ë¡œê·¸ëž¨ì—ì„œëŠ” ë¼ì¸ë‹¨ìœ„ë¡œ í† í° ë° ì˜¤ë¸Œì íŠ¸ ê´€ë¦¬ë¥¼ í•˜ê³  ìžˆë‹¤. 
  * ----------------------------------------------------------------------------------
  */
 int token_parsing(char *str) 
 {
 	token* newToken = calloc(sizeof(token), 1);
 
-	// ·¹ÀÌºí Á¸Àç À¯¹« ÆÇ´Ü
+	// ë ˆì´ë¸” ì¡´ìž¬ ìœ ë¬´ íŒë‹¨
 	if (str[0] != '\t') {
 		sscanf(str, "%s", newToken->label);
 
-		// ÁÖ¼®¹®ÀÌ¸é ¹«½Ã
+		// ì£¼ì„ë¬¸ì´ë©´ ë¬´ì‹œ
 		if (newToken->label[0] == '.') {
 			free(newToken);
 			return 0;
@@ -177,8 +177,8 @@ int token_parsing(char *str)
 				return 0;
 			}
 
-			// ÇÇ¿¬»êÀÚ¸¦ ÀÔ·Â¹Þ°í, ','(½°Ç¥)·Î ±¸ºÐÇÏ¿© ¿©·¯°³ÀÇ ÇÇ¿¬»êÀÚ°¡ ÁöÁ¤µÈ °æ¿ì
-			// ÀÌµé °¢°¢À» operand[index]¿¡ ³ª´©¾î ÀúÀå
+			// í”¼ì—°ì‚°ìžë¥¼ ìž…ë ¥ë°›ê³ , ','(ì‰¼í‘œ)ë¡œ êµ¬ë¶„í•˜ì—¬ ì—¬ëŸ¬ê°œì˜ í”¼ì—°ì‚°ìžê°€ ì§€ì •ëœ ê²½ìš°
+			// ì´ë“¤ ê°ê°ì„ operand[index]ì— ë‚˜ëˆ„ì–´ ì €ìž¥
 			newToken->operandCount = 1;
 			while (split(newToken->operand[newToken->operandCount - 1], newToken->operand[newToken->operandCount], ',') != -1)
 				newToken->operandCount++;
@@ -194,8 +194,8 @@ int token_parsing(char *str)
 		return 0;
 	}
 
-	// ÇÇ¿¬»êÀÚ¸¦ ÀÔ·Â¹Þ°í, ','(½°Ç¥)·Î ±¸ºÐÇÏ¿© ¿©·¯°³ÀÇ ÇÇ¿¬»êÀÚ°¡ ÁöÁ¤µÈ °æ¿ì
-	// ÀÌµé °¢°¢À» operand[index]¿¡ ³ª´©¾î ÀúÀå
+	// í”¼ì—°ì‚°ìžë¥¼ ìž…ë ¥ë°›ê³ , ','(ì‰¼í‘œ)ë¡œ êµ¬ë¶„í•˜ì—¬ ì—¬ëŸ¬ê°œì˜ í”¼ì—°ì‚°ìžê°€ ì§€ì •ëœ ê²½ìš°
+	// ì´ë“¤ ê°ê°ì„ operand[index]ì— ë‚˜ëˆ„ì–´ ì €ìž¥
 	newToken->operandCount = 1;
 	while (split(newToken->operand[newToken->operandCount - 1], newToken->operand[newToken->operandCount], ',') != -1)
 		newToken->operandCount++;
@@ -205,10 +205,10 @@ int token_parsing(char *str)
 }
 
 /*
-* ¼³¸í : ¾ÆÁ÷ ÁÖ¼Ò°ªÀÌ ÇÒ´çµÇÁö ¾ÊÀº ¸®ÅÍ·²À» Ã£¾ÆÁÖ´Â ÇÔ¼öÀÌ´Ù.
-* ¸Å°³ : name = ¸®ÅÍ·² ÀÌ¸§
-* ¹ÝÈ¯ : ( -1 ) = ÁÖ¼Ò°ªÀÌ ÇÒ´çµÇÁö ¾ÊÀº ¸®ÅÍ·²ÀÌ ¾øÀ½
-*		( n ) = ¸®ÅÍ·² ÀÎµ¦½º
+* ì„¤ëª… : ì•„ì§ ì£¼ì†Œê°’ì´ í• ë‹¹ë˜ì§€ ì•Šì€ ë¦¬í„°ëŸ´ì„ ì°¾ì•„ì£¼ëŠ” í•¨ìˆ˜ì´ë‹¤.
+* ë§¤ê°œ : name = ë¦¬í„°ëŸ´ ì´ë¦„
+* ë°˜í™˜ : ( -1 ) = ì£¼ì†Œê°’ì´ í• ë‹¹ë˜ì§€ ì•Šì€ ë¦¬í„°ëŸ´ì´ ì—†ìŒ
+*		( n ) = ë¦¬í„°ëŸ´ ì¸ë±ìŠ¤
 */
 int search_unassigned_literal() {
 	for (int i = 0; i < literalIndex; i++) {
@@ -219,11 +219,11 @@ int search_unassigned_literal() {
 }
 
 /*
-* ¼³¸í : ½Éº¼ Å×ÀÌºí¿¡¼­ ½Éº¼À» °Ë»öÇÏ´Â ÇÔ¼öÀÌ´Ù.
-* ¸Å°³ : name = ½Éº¼ ÀÌ¸§
-*		csect = ½Éº¼ÀÌ ¼ÓÇÑ control section
-* ¹ÝÈ¯ : ( -1 ) = ½Éº¼ Å×ÀÌºí¿¡ ¾øÀ½
-*		( n ) = ½Éº¼ Å×ÀÌºí ³» ÀÎµ¦½º
+* ì„¤ëª… : ì‹¬ë³¼ í…Œì´ë¸”ì—ì„œ ì‹¬ë³¼ì„ ê²€ìƒ‰í•˜ëŠ” í•¨ìˆ˜ì´ë‹¤.
+* ë§¤ê°œ : name = ì‹¬ë³¼ ì´ë¦„
+*		csect = ì‹¬ë³¼ì´ ì†í•œ control section
+* ë°˜í™˜ : ( -1 ) = ì‹¬ë³¼ í…Œì´ë¸”ì— ì—†ìŒ
+*		( n ) = ì‹¬ë³¼ í…Œì´ë¸” ë‚´ ì¸ë±ìŠ¤
 */
 int search_symbol(const char* name, const char* csect) {
 	for (int i = 0; i < symbolIndex; i++) {
@@ -234,15 +234,15 @@ int search_symbol(const char* name, const char* csect) {
 }
 
 /*
-* ¼³¸í : ½Éº¼ Å×ÀÌºí¿¡ ½Éº¼À» Ãß°¡ÇØÁÖ´Â ÇÔ¼öÀÌ´Ù.
-* ¸Å°³ : name = ½Éº¼ ÀÌ¸§
-*		csect = ½Éº¼ÀÌ ¼ÓÇÑ control section
-*		address = ÁÖ¼Ò°ª
-* ¹ÝÈ¯ : ( 1 ) = ½Éº¼ Å×ÀÌºí¿¡ Àß Ãß°¡µÊ
-*		( 0 ) = ½Éº¼ Å×ÀÌºí¿¡ Ãß°¡ Áß ¿¡·¯ ¹ß»ý
+* ì„¤ëª… : ì‹¬ë³¼ í…Œì´ë¸”ì— ì‹¬ë³¼ì„ ì¶”ê°€í•´ì£¼ëŠ” í•¨ìˆ˜ì´ë‹¤.
+* ë§¤ê°œ : name = ì‹¬ë³¼ ì´ë¦„
+*		csect = ì‹¬ë³¼ì´ ì†í•œ control section
+*		address = ì£¼ì†Œê°’
+* ë°˜í™˜ : ( 1 ) = ì‹¬ë³¼ í…Œì´ë¸”ì— ìž˜ ì¶”ê°€ë¨
+*		( 0 ) = ì‹¬ë³¼ í…Œì´ë¸”ì— ì¶”ê°€ ì¤‘ ì—ëŸ¬ ë°œìƒ
 */
 int insert_symbol(const char* name, const char* csect, int address) {
-	// ÀÌ¹Ì ÀÖ´Â ½Éº¼
+	// ì´ë¯¸ ìžˆëŠ” ì‹¬ë³¼
 	if (search_symbol(name, csect) != -1)
 		return 0;
 
@@ -265,10 +265,10 @@ int insert_literal(const char* name) {
 }
 
 /*
-* ¼³¸í : ¸®ÅÍ·²À» ÀÌ¸§À¸·Î °Ë»öÇÏ´Â ÇÔ¼öÀÌ´Ù.
-* ¸Å°³ : name = °Ë»öÇÒ ¸®ÅÍ·²ÀÇ ÀÌ¸§
-* ¹ÝÈ¯ : ( n ) = ¸®ÅÍ·² ÀÎµ¦½º
-*		( -1 ) = ÇØ´ç ¸®ÅÍ·² ¾øÀ½
+* ì„¤ëª… : ë¦¬í„°ëŸ´ì„ ì´ë¦„ìœ¼ë¡œ ê²€ìƒ‰í•˜ëŠ” í•¨ìˆ˜ì´ë‹¤.
+* ë§¤ê°œ : name = ê²€ìƒ‰í•  ë¦¬í„°ëŸ´ì˜ ì´ë¦„
+* ë°˜í™˜ : ( n ) = ë¦¬í„°ëŸ´ ì¸ë±ìŠ¤
+*		( -1 ) = í•´ë‹¹ ë¦¬í„°ëŸ´ ì—†ìŒ
 */
 int search_literal(const char* name) {
 	for (int i = 0; i < literalIndex; i++) {
@@ -280,12 +280,12 @@ int search_literal(const char* name) {
 }
 
 /*
-* ¼³¸í : ¹®ÀÚ¿­À» Æ¯Á¤ ¹®ÀÚ(ÅäÅ«)¸¦ ±âÁØÀ¸·Î ÀÚ¸£´Â ÇÔ¼öÀÌ´Ù.
-* ¸Å°³ : srcStr = ÀÚ¸¦ ¹®ÀÚ¿­. ÇÔ¼ö ½ÇÇà ÈÄ ÅäÅ«À» ±âÁØÀ¸·Î ÁÂÃø¿¡ À§Ä¡ÇÑ ¹®ÀÚ¿­ÀÌ ÀúÀåµÈ´Ù.
-*		dstStr = ÇÔ¼ö ½ÇÇà ÈÄ ÅäÅ«À» ±âÁØÀ¸·Î ¿ìÃø¿¡ À§Ä¡ÇÑ ¹®ÀÚ¿­ÀÌ ÀúÀåµÈ´Ù.
-*		token = ¹®ÀÚ¿­À» ÀÚ¸£´Â ±âÁØÀÌ µÇ´Â ¹®ÀÚ
-* ¹ÝÈ¯ : ( -1 ) = ¹®ÀÚ¿­ ³»¿¡ ÅäÅ« ¹®ÀÚ°¡ ¾øÀ»¶§
-*		( 0 ) = ¼º°øÀûÀ¸·Î Àß¶ó³»¾úÀ» ¶§
+* ì„¤ëª… : ë¬¸ìžì—´ì„ íŠ¹ì • ë¬¸ìž(í† í°)ë¥¼ ê¸°ì¤€ìœ¼ë¡œ ìžë¥´ëŠ” í•¨ìˆ˜ì´ë‹¤.
+* ë§¤ê°œ : srcStr = ìžë¥¼ ë¬¸ìžì—´. í•¨ìˆ˜ ì‹¤í–‰ í›„ í† í°ì„ ê¸°ì¤€ìœ¼ë¡œ ì¢Œì¸¡ì— ìœ„ì¹˜í•œ ë¬¸ìžì—´ì´ ì €ìž¥ëœë‹¤.
+*		dstStr = í•¨ìˆ˜ ì‹¤í–‰ í›„ í† í°ì„ ê¸°ì¤€ìœ¼ë¡œ ìš°ì¸¡ì— ìœ„ì¹˜í•œ ë¬¸ìžì—´ì´ ì €ìž¥ëœë‹¤.
+*		token = ë¬¸ìžì—´ì„ ìžë¥´ëŠ” ê¸°ì¤€ì´ ë˜ëŠ” ë¬¸ìž
+* ë°˜í™˜ : ( -1 ) = ë¬¸ìžì—´ ë‚´ì— í† í° ë¬¸ìžê°€ ì—†ì„ë•Œ
+*		( 0 ) = ì„±ê³µì ìœ¼ë¡œ ìž˜ë¼ë‚´ì—ˆì„ ë•Œ
 */
 int split(char* srcStr, char* dstStr, char token) {
 	int length = strlen(srcStr);
@@ -305,10 +305,10 @@ int split(char* srcStr, char* dstStr, char token) {
 }
 
 /*
-* ¼³¸í : ÇÇ¿¬»êÀÚ¸¦ ÀÐ¾îµéÀÌ´Â ÇÔ¼öÀÌ´Ù.
-* ¸Å°³ : str = ÅäÅ«(\n)À¸·Î ±¸ºÐµÈ ¹®ÀÚ¿­, str_for_save = ¸í·É¾î°¡ ÀúÀåµÉ ¹®ÀÚ¿­
-* ¹ÝÈ¯ : ( -1 ) = ¿À·ù ¹ß»ý
-*		( 0 ) = Á¤»óÁ¾·á
+* ì„¤ëª… : í”¼ì—°ì‚°ìžë¥¼ ì½ì–´ë“¤ì´ëŠ” í•¨ìˆ˜ì´ë‹¤.
+* ë§¤ê°œ : str = í† í°(\n)ìœ¼ë¡œ êµ¬ë¶„ëœ ë¬¸ìžì—´, str_for_save = ëª…ë ¹ì–´ê°€ ì €ìž¥ë  ë¬¸ìžì—´
+* ë°˜í™˜ : ( -1 ) = ì˜¤ë¥˜ ë°œìƒ
+*		( 0 ) = ì •ìƒì¢…ë£Œ
 */
 int read_operand(const char* str, char* str_for_save) {
 	int skip_index = skip_past_blank(str);
@@ -327,10 +327,10 @@ int read_operand(const char* str, char* str_for_save) {
 }
 
 /*
-* ¼³¸í : ¹®ÀÚ¿­ ¿ÞÂÊ ¸Ç ³¡¿¡ ÀÖ´Â \t ¹®ÀÚ¸¦ ¸ðµÎ °Ç³Ê¶Ù±â À§ÇÑ ÇÔ¼öÀÌ´Ù.
-* ¸Å°³ : \t °Ç³Ê¶Ù±â¸¦ ¿øÇÏ´Â ¹®ÀÚ¿­
-* ¹ÝÈ¯ : Á¤»óÁ¾·á = \t°¡ ¾Æ´Ñ ¹®ÀÚ°¡ Ã³À½À¸·Î ³ª¿À´Â ÀÎµ¦½º
-*		\t°¡ ¾ø´Â °æ¿ì = ( -1 )
+* ì„¤ëª… : ë¬¸ìžì—´ ì™¼ìª½ ë§¨ ëì— ìžˆëŠ” \t ë¬¸ìžë¥¼ ëª¨ë‘ ê±´ë„ˆë›°ê¸° ìœ„í•œ í•¨ìˆ˜ì´ë‹¤.
+* ë§¤ê°œ : \t ê±´ë„ˆë›°ê¸°ë¥¼ ì›í•˜ëŠ” ë¬¸ìžì—´
+* ë°˜í™˜ : ì •ìƒì¢…ë£Œ = \tê°€ ì•„ë‹Œ ë¬¸ìžê°€ ì²˜ìŒìœ¼ë¡œ ë‚˜ì˜¤ëŠ” ì¸ë±ìŠ¤
+*		\tê°€ ì—†ëŠ” ê²½ìš° = ( -1 )
 */
 int skip_past_blank(const char* str) {
 	int count = 0;
@@ -344,10 +344,10 @@ int skip_past_blank(const char* str) {
 }
 
 /* ----------------------------------------------------------------------------------
- * ¼³¸í : ÀÔ·Â ¹®ÀÚ¿­ÀÌ ±â°è¾î ÄÚµåÀÎÁö¸¦ °Ë»çÇÏ´Â ÇÔ¼öÀÌ´Ù. 
- * ¸Å°³ : str = ÅäÅ« ´ÜÀ§·Î ±¸ºÐµÈ ¹®ÀÚ¿­
- * ¹ÝÈ¯ : Á¤»óÁ¾·á = ±â°è¾î Å×ÀÌºí ÀÎµ¦½º, ¿¡·¯ < 0 
- * ÁÖÀÇ : 
+ * ì„¤ëª… : ìž…ë ¥ ë¬¸ìžì—´ì´ ê¸°ê³„ì–´ ì½”ë“œì¸ì§€ë¥¼ ê²€ì‚¬í•˜ëŠ” í•¨ìˆ˜ì´ë‹¤. 
+ * ë§¤ê°œ : str = í† í° ë‹¨ìœ„ë¡œ êµ¬ë¶„ëœ ë¬¸ìžì—´
+ * ë°˜í™˜ : ì •ìƒì¢…ë£Œ = ê¸°ê³„ì–´ í…Œì´ë¸” ì¸ë±ìŠ¤, ì—ëŸ¬ < 0 
+ * ì£¼ì˜ : 
  *		
  * ----------------------------------------------------------------------------------
  */
@@ -375,27 +375,27 @@ int search_opcode(char *str)
 		}
 	}
 
-	// Ã£Áö ¸øÇÔ
+	// ì°¾ì§€ ëª»í•¨
 	return -1;
 }
 
 /* ----------------------------------------------------------------------------------
-* ¼³¸í : ¾î¼Àºí¸® ÄÚµå¸¦ À§ÇÑ ÆÐ½º1°úÁ¤À» ¼öÇàÇÏ´Â ÇÔ¼öÀÌ´Ù.
-*		   ÆÐ½º1¿¡¼­´Â..
-*		   1. ÇÁ·Î±×·¥ ¼Ò½º¸¦ ½ºÄµÇÏ¿© ÇØ´çÇÏ´Â ÅäÅ«´ÜÀ§·Î ºÐ¸®ÇÏ¿© ÇÁ·Î±×·¥ ¶óÀÎº° ÅäÅ«
-*		   Å×ÀÌºíÀ» »ý¼ºÇÑ´Ù.
+* ì„¤ëª… : ì–´ì…ˆë¸”ë¦¬ ì½”ë“œë¥¼ ìœ„í•œ íŒ¨ìŠ¤1ê³¼ì •ì„ ìˆ˜í–‰í•˜ëŠ” í•¨ìˆ˜ì´ë‹¤.
+*		   íŒ¨ìŠ¤1ì—ì„œëŠ”..
+*		   1. í”„ë¡œê·¸ëž¨ ì†ŒìŠ¤ë¥¼ ìŠ¤ìº”í•˜ì—¬ í•´ë‹¹í•˜ëŠ” í† í°ë‹¨ìœ„ë¡œ ë¶„ë¦¬í•˜ì—¬ í”„ë¡œê·¸ëž¨ ë¼ì¸ë³„ í† í°
+*		   í…Œì´ë¸”ì„ ìƒì„±í•œë‹¤.
 *
-* ¸Å°è : ¾øÀ½
-* ¹ÝÈ¯ : Á¤»ó Á¾·á = 0 , ¿¡·¯ = < 0
-* ÁÖÀÇ : ÇöÀç ÃÊ±â ¹öÀü¿¡¼­´Â ¿¡·¯¿¡ ´ëÇÑ °Ë»ç¸¦ ÇÏÁö ¾Ê°í ³Ñ¾î°£ »óÅÂÀÌ´Ù.
-*	  µû¶ó¼­ ¿¡·¯¿¡ ´ëÇÑ °Ë»ç ·çÆ¾À» Ãß°¡ÇØ¾ß ÇÑ´Ù.
+* ë§¤ê³„ : ì—†ìŒ
+* ë°˜í™˜ : ì •ìƒ ì¢…ë£Œ = 0 , ì—ëŸ¬ = < 0
+* ì£¼ì˜ : í˜„ìž¬ ì´ˆê¸° ë²„ì „ì—ì„œëŠ” ì—ëŸ¬ì— ëŒ€í•œ ê²€ì‚¬ë¥¼ í•˜ì§€ ì•Šê³  ë„˜ì–´ê°„ ìƒíƒœì´ë‹¤.
+*	  ë”°ë¼ì„œ ì—ëŸ¬ì— ëŒ€í•œ ê²€ì‚¬ ë£¨í‹´ì„ ì¶”ê°€í•´ì•¼ í•œë‹¤.
 *
 * -----------------------------------------------------------------------------------
 */
 static int assem_pass1(void)
 {
-	/* input_dataÀÇ ¹®ÀÚ¿­À» ÇÑÁÙ¾¿ ÀÔ·Â ¹Þ¾Æ¼­
-	 * token_parsing()À» È£ÃâÇÏ¿© token_unit¿¡ ÀúÀå
+	/* input_dataì˜ ë¬¸ìžì—´ì„ í•œì¤„ì”© ìž…ë ¥ ë°›ì•„ì„œ
+	 * token_parsing()ì„ í˜¸ì¶œí•˜ì—¬ token_unitì— ì €ìž¥
 	 */
 	for (int i = 0; i < line_num; i++) {
 		if (token_parsing(input_data[i]) < 0)
@@ -411,28 +411,28 @@ static int assem_pass1(void)
 		}
 
 		int instIndex = -1;
-		// ¸í·É¾î
+		// ëª…ë ¹ì–´
 		if ((instIndex = search_opcode(t->operator)) != -1) {
 			t->address = locctr;
 
-			// ¸®ÅÍ·²
+			// ë¦¬í„°ëŸ´
 			if (t->operand[0][0] == '=') {
 				insert_literal(t->operand[0]);
 			}
 
-			// 1, 2Çü½Ä
+			// 1, 2í˜•ì‹
 			if (inst_table[instIndex]->format < 3)
 				locctr += inst_table[instIndex]->format;
 
-			// 4Çü½Ä
+			// 4í˜•ì‹
 			else if (t->operator[0] == '+')
 				locctr += 4;
 
-			// 3Çü½Ä
+			// 3í˜•ì‹
 			else
 				locctr += 3;
 		}
-		// Áö½Ã¾î ¿©ºÎ °Ë»ç
+		// ì§€ì‹œì–´ ì—¬ë¶€ ê²€ì‚¬
 		else if (!strcmp(t->operator, "RESW")) {
 			t->address = locctr;
 
@@ -448,22 +448,22 @@ static int assem_pass1(void)
 		else if (!strcmp(t->operator, "BYTE")) {
 			t->address = locctr;
 			
-			// 16Áø¼ö
+			// 16ì§„ìˆ˜
 			if (t->operand[0] == 'X') {
 
 			}
 
-			// TODO: locctr °ª ¿Ã¶ó°¡´Â°Å ¼öÁ¤ÇØ¾ßÇÔ
+			// TODO: locctr ê°’ ì˜¬ë¼ê°€ëŠ”ê±° ìˆ˜ì •í•´ì•¼í•¨
 			locctr++;
 		}
 		else if (!strcmp(t->operator, "WORD")) {
 			t->address = locctr;
 
-			// TODO: locctr °ª ¿Ã¶ó°¡´Â°Å ¼öÁ¤ÇØ¾ßÇÔ
+			// TODO: locctr ê°’ ì˜¬ë¼ê°€ëŠ”ê±° ìˆ˜ì •í•´ì•¼í•¨
 			locctr += 3;
 		}
 		else if (!strcmp(t->operator, "START")) {
-			// Csect ¼³Á¤
+			// Csect ì„¤ì •
 			strcpy(currentCsect, t->label);
 
 			int startAddress = atoi(t->operand[0]);
@@ -473,10 +473,10 @@ static int assem_pass1(void)
 				return -1;
 		}
 		else if (!strcmp(t->operator, "END")) {
-			// ÇÁ·Î±×·¥ ½ÃÀÛ ÁÖ¼Ò ¸í½ÃÇÑ ÄÉÀÌ½º
+			// í”„ë¡œê·¸ëž¨ ì‹œìž‘ ì£¼ì†Œ ëª…ì‹œí•œ ì¼€ì´ìŠ¤
 		}
 		else if (!strcmp(t->operator, "BASE")) {
-			// TODO: BASE Ã³¸®
+			// TODO: BASE ì²˜ë¦¬
 			int startAddress = atoi(t->operand[0]);
 			locctr = startAddress;
 		}
@@ -486,7 +486,7 @@ static int assem_pass1(void)
 					return -1;
 			}
 			else {
-				// BUFFEND - BUFFER °°Àº ¼ö½Ä ÇØ¼®
+				// BUFFEND - BUFFER ê°™ì€ ìˆ˜ì‹ í•´ì„
 				char rightOperand[10];
 				split(t->operand[0], rightOperand, '-');
 				int leftSymbolIndex = search_symbol(t->operand[0], currentCsect);
@@ -521,8 +521,8 @@ static int assem_pass1(void)
 			}
 		}
 		else if (!strcmp(t->operator, "EXTDEF")) {
-			// ÇÇ¿¬»êÀÚ¸¦ ÀÔ·Â¹Þ°í, ','(½°Ç¥)·Î ±¸ºÐÇÏ¿© ¿©·¯°³ÀÇ ÇÇ¿¬»êÀÚ°¡ ÁöÁ¤µÈ °æ¿ì
-			// ÀÌµé °¢°¢À» operand[index]¿¡ ³ª´©¾î ÀúÀå
+			// í”¼ì—°ì‚°ìžë¥¼ ìž…ë ¥ë°›ê³ , ','(ì‰¼í‘œ)ë¡œ êµ¬ë¶„í•˜ì—¬ ì—¬ëŸ¬ê°œì˜ í”¼ì—°ì‚°ìžê°€ ì§€ì •ëœ ê²½ìš°
+			// ì´ë“¤ ê°ê°ì„ operand[index]ì— ë‚˜ëˆ„ì–´ ì €ìž¥
 			/*
 			t->operandCount = 1;
 			while (split(t->operand[t->operandCount - 1], t->operand[t->operandCount], ',') != -1)
@@ -530,8 +530,8 @@ static int assem_pass1(void)
 			*/
 		}
 		else if (!strcmp(t->operator, "EXTREF")) {
-			// ÇÇ¿¬»êÀÚ¸¦ ÀÔ·Â¹Þ°í, ','(½°Ç¥)·Î ±¸ºÐÇÏ¿© ¿©·¯°³ÀÇ ÇÇ¿¬»êÀÚ°¡ ÁöÁ¤µÈ °æ¿ì
-			// ÀÌµé °¢°¢À» operand[index]¿¡ ³ª´©¾î ÀúÀå
+			// í”¼ì—°ì‚°ìžë¥¼ ìž…ë ¥ë°›ê³ , ','(ì‰¼í‘œ)ë¡œ êµ¬ë¶„í•˜ì—¬ ì—¬ëŸ¬ê°œì˜ í”¼ì—°ì‚°ìžê°€ ì§€ì •ëœ ê²½ìš°
+			// ì´ë“¤ ê°ê°ì„ operand[index]ì— ë‚˜ëˆ„ì–´ ì €ìž¥
 			/*
 			t->operandCount = 1;
 			while (split(t->operand[t->operandCount - 1], t->operand[t->operandCount], ',') != -1)
@@ -552,9 +552,9 @@ static int assem_pass1(void)
 			if (!insert_symbol(t->label, currentCsect, locctr))
 				return -1;
 		}
-		// ¸í·É¾îµµ, Áö½Ã¾îµµ ¾Æ´Ñ »óÈ²
+		// ëª…ë ¹ì–´ë„, ì§€ì‹œì–´ë„ ì•„ë‹Œ ìƒí™©
 		else {
-			// TODO: ¾Ë ¼ö ¾ø´Â Å°¿öµå ¿¡·¯ Ã³¸®
+			// TODO: ì•Œ ìˆ˜ ì—†ëŠ” í‚¤ì›Œë“œ ì—ëŸ¬ ì²˜ë¦¬
 		}
 	}
 
@@ -573,22 +573,22 @@ int read_operator(const char* str, char* str_for_save) {
 }
 
 /* --------------------------------------------------------------------------------*
-* ------------------------- ÃßÈÄ ÇÁ·ÎÁ§Æ®¿¡¼­ »ç¿ëÇÒ ÇÔ¼ö --------------------------*
+* ------------------------- ì¶”í›„ í”„ë¡œì íŠ¸ì—ì„œ ì‚¬ìš©í•  í•¨ìˆ˜ --------------------------*
 * --------------------------------------------------------------------------------*/
 
 /* ----------------------------------------------------------------------------------
-* ¼³¸í : ÀÔ·ÂµÈ ¹®ÀÚ¿­ÀÇ ÀÌ¸§À» °¡Áø ÆÄÀÏ¿¡ ÇÁ·Î±×·¥ÀÇ °á°ú¸¦ ÀúÀåÇÏ´Â ÇÔ¼öÀÌ´Ù.
-*        ¿©±â¼­ Ãâ·ÂµÇ´Â ³»¿ëÀº SYMBOLº° ÁÖ¼Ò°ªÀÌ ÀúÀåµÈ TABLEÀÌ´Ù.
-* ¸Å°è : »ý¼ºÇÒ ¿ÀºêÁ§Æ® ÆÄÀÏ¸í
-* ¹ÝÈ¯ : ¾øÀ½
-* ÁÖÀÇ : ¸¸¾à ÀÎÀÚ·Î NULL°ªÀÌ µé¾î¿Â´Ù¸é ÇÁ·Î±×·¥ÀÇ °á°ú¸¦ Ç¥ÁØÃâ·ÂÀ¸·Î º¸³»¾î
-*        È­¸é¿¡ Ãâ·ÂÇØÁØ´Ù.
+* ì„¤ëª… : ìž…ë ¥ëœ ë¬¸ìžì—´ì˜ ì´ë¦„ì„ ê°€ì§„ íŒŒì¼ì— í”„ë¡œê·¸ëž¨ì˜ ê²°ê³¼ë¥¼ ì €ìž¥í•˜ëŠ” í•¨ìˆ˜ì´ë‹¤.
+*        ì—¬ê¸°ì„œ ì¶œë ¥ë˜ëŠ” ë‚´ìš©ì€ SYMBOLë³„ ì£¼ì†Œê°’ì´ ì €ìž¥ëœ TABLEì´ë‹¤.
+* ë§¤ê³„ : ìƒì„±í•  ì˜¤ë¸Œì íŠ¸ íŒŒì¼ëª…
+* ë°˜í™˜ : ì—†ìŒ
+* ì£¼ì˜ : ë§Œì•½ ì¸ìžë¡œ NULLê°’ì´ ë“¤ì–´ì˜¨ë‹¤ë©´ í”„ë¡œê·¸ëž¨ì˜ ê²°ê³¼ë¥¼ í‘œì¤€ì¶œë ¥ìœ¼ë¡œ ë³´ë‚´ì–´
+*        í™”ë©´ì— ì¶œë ¥í•´ì¤€ë‹¤.
 *
 * -----------------------------------------------------------------------------------
 */
 void make_symtab_output(char *file_name)
 {
-	// Ç¥ÁØ ÀÔÃâ·Â
+	// í‘œì¤€ ìž…ì¶œë ¥
 	if (file_name == NULL) {
 		char curCsect[10];
 		for (int i = 0; i < symbolIndex; i++) {
@@ -601,10 +601,10 @@ void make_symtab_output(char *file_name)
 		return;
 	}
 
-	// ÆÄÀÏ ÀÔÃâ·Â
+	// íŒŒì¼ ìž…ì¶œë ¥
 	FILE* file = fopen(file_name, "w");
 	if (file == NULL) {
-		printf("%s ÆÄÀÏ »ý¼º ¿¡·¯\n", file_name);
+		printf("%s íŒŒì¼ ìƒì„± ì—ëŸ¬\n", file_name);
 		return;
 	}
 
@@ -612,13 +612,13 @@ void make_symtab_output(char *file_name)
 }
 
 /* ----------------------------------------------------------------------------------
-* ¼³¸í : ¾î¼Àºí¸® ÄÚµå¸¦ ±â°è¾î ÄÚµå·Î ¹Ù²Ù±â À§ÇÑ ÆÐ½º2 °úÁ¤À» ¼öÇàÇÏ´Â ÇÔ¼öÀÌ´Ù.
-*		   ÆÐ½º 2¿¡¼­´Â ÇÁ·Î±×·¥À» ±â°è¾î·Î ¹Ù²Ù´Â ÀÛ¾÷Àº ¶óÀÎ ´ÜÀ§·Î ¼öÇàµÈ´Ù.
-*		   ´ÙÀ½°ú °°Àº ÀÛ¾÷ÀÌ ¼öÇàµÇ¾î Áø´Ù.
-*		   1. ½ÇÁ¦·Î ÇØ´ç ¾î¼Àºí¸® ¸í·É¾î¸¦ ±â°è¾î·Î ¹Ù²Ù´Â ÀÛ¾÷À» ¼öÇàÇÑ´Ù.
-* ¸Å°è : ¾øÀ½
-* ¹ÝÈ¯ : Á¤»óÁ¾·á = 0, ¿¡·¯¹ß»ý = < 0
-* ÁÖÀÇ :
+* ì„¤ëª… : ì–´ì…ˆë¸”ë¦¬ ì½”ë“œë¥¼ ê¸°ê³„ì–´ ì½”ë“œë¡œ ë°”ê¾¸ê¸° ìœ„í•œ íŒ¨ìŠ¤2 ê³¼ì •ì„ ìˆ˜í–‰í•˜ëŠ” í•¨ìˆ˜ì´ë‹¤.
+*		   íŒ¨ìŠ¤ 2ì—ì„œëŠ” í”„ë¡œê·¸ëž¨ì„ ê¸°ê³„ì–´ë¡œ ë°”ê¾¸ëŠ” ìž‘ì—…ì€ ë¼ì¸ ë‹¨ìœ„ë¡œ ìˆ˜í–‰ëœë‹¤.
+*		   ë‹¤ìŒê³¼ ê°™ì€ ìž‘ì—…ì´ ìˆ˜í–‰ë˜ì–´ ì§„ë‹¤.
+*		   1. ì‹¤ì œë¡œ í•´ë‹¹ ì–´ì…ˆë¸”ë¦¬ ëª…ë ¹ì–´ë¥¼ ê¸°ê³„ì–´ë¡œ ë°”ê¾¸ëŠ” ìž‘ì—…ì„ ìˆ˜í–‰í•œë‹¤.
+* ë§¤ê³„ : ì—†ìŒ
+* ë°˜í™˜ : ì •ìƒì¢…ë£Œ = 0, ì—ëŸ¬ë°œìƒ = < 0
+* ì£¼ì˜ :
 * -----------------------------------------------------------------------------------
 */
 static int assem_pass2(void)
@@ -770,7 +770,7 @@ static int assem_pass2(void)
 				else {
 					if (symbolIndex == -1) {
 						for (int i = 0; i < extrefCount; i++) {
-							// EXTREF ·¹ÀÌºí
+							// EXTREF ë ˆì´ë¸”
 							if (!strcmp(extref[i], t->operand[0])) {
 								printf("%02X%01X00000\n", op, xbpe);
 								break;
@@ -784,12 +784,12 @@ static int assem_pass2(void)
 }
 
 /* ----------------------------------------------------------------------------------
-* ¼³¸í : ÀÔ·ÂµÈ ¹®ÀÚ¿­ÀÇ ÀÌ¸§À» °¡Áø ÆÄÀÏ¿¡ ÇÁ·Î±×·¥ÀÇ °á°ú¸¦ ÀúÀåÇÏ´Â ÇÔ¼öÀÌ´Ù.
-*        ¿©±â¼­ Ãâ·ÂµÇ´Â ³»¿ëÀº object code (ÇÁ·ÎÁ§Æ® 1¹ø) ÀÌ´Ù.
-* ¸Å°è : »ý¼ºÇÒ ¿ÀºêÁ§Æ® ÆÄÀÏ¸í
-* ¹ÝÈ¯ : ¾øÀ½
-* ÁÖÀÇ : ¸¸¾à ÀÎÀÚ·Î NULL°ªÀÌ µé¾î¿Â´Ù¸é ÇÁ·Î±×·¥ÀÇ °á°ú¸¦ Ç¥ÁØÃâ·ÂÀ¸·Î º¸³»¾î
-*        È­¸é¿¡ Ãâ·ÂÇØÁØ´Ù.
+* ì„¤ëª… : ìž…ë ¥ëœ ë¬¸ìžì—´ì˜ ì´ë¦„ì„ ê°€ì§„ íŒŒì¼ì— í”„ë¡œê·¸ëž¨ì˜ ê²°ê³¼ë¥¼ ì €ìž¥í•˜ëŠ” í•¨ìˆ˜ì´ë‹¤.
+*        ì—¬ê¸°ì„œ ì¶œë ¥ë˜ëŠ” ë‚´ìš©ì€ object code (í”„ë¡œì íŠ¸ 1ë²ˆ) ì´ë‹¤.
+* ë§¤ê³„ : ìƒì„±í•  ì˜¤ë¸Œì íŠ¸ íŒŒì¼ëª…
+* ë°˜í™˜ : ì—†ìŒ
+* ì£¼ì˜ : ë§Œì•½ ì¸ìžë¡œ NULLê°’ì´ ë“¤ì–´ì˜¨ë‹¤ë©´ í”„ë¡œê·¸ëž¨ì˜ ê²°ê³¼ë¥¼ í‘œì¤€ì¶œë ¥ìœ¼ë¡œ ë³´ë‚´ì–´
+*        í™”ë©´ì— ì¶œë ¥í•´ì¤€ë‹¤.
 *
 * -----------------------------------------------------------------------------------
 */

@@ -1,5 +1,5 @@
-/* 
- * my_assembler ÇÔ¼ö¸¦ À§ÇÑ º¯¼ö ¼±¾ğ ¹× ¸ÅÅ©·Î¸¦ ´ã°í ÀÖ´Â Çì´õ ÆÄÀÏÀÌ´Ù. 
+ï»¿/* 
+ * my_assembler í•¨ìˆ˜ë¥¼ ìœ„í•œ ë³€ìˆ˜ ì„ ì–¸ ë° ë§¤í¬ë¡œë¥¼ ë‹´ê³  ìˆëŠ” í—¤ë” íŒŒì¼ì´ë‹¤. 
  * 
  */
 #define MAX_INST 256
@@ -22,8 +22,8 @@ directive *directive_table[MAX_DIRECTIVE];
 int directive_index;
 
 /* 
- * instruction ¸ñ·Ï ÆÄÀÏ·Î ºÎÅÍ Á¤º¸¸¦ ¹Ş¾Æ¿Í¼­ »ı¼ºÇÏ´Â ±¸Á¶Ã¼ º¯¼öÀÌ´Ù.
- * ¶óÀÎ º°·Î ÇÏ³ªÀÇ instructionÀ» ÀúÀåÇÑ´Ù.
+ * instruction ëª©ë¡ íŒŒì¼ë¡œ ë¶€í„° ì •ë³´ë¥¼ ë°›ì•„ì™€ì„œ ìƒì„±í•˜ëŠ” êµ¬ì¡°ì²´ ë³€ìˆ˜ì´ë‹¤.
+ * ë¼ì¸ ë³„ë¡œ í•˜ë‚˜ì˜ instructionì„ ì €ì¥í•œë‹¤.
  */
 struct inst_unit {
 	char name[10];
@@ -36,16 +36,16 @@ inst *inst_table[MAX_INST];
 int inst_index;
 
 /*
- * ¾î¼Àºí¸® ÇÒ ¼Ò½ºÄÚµå¸¦ ÀÔ·Â¹Ş´Â Å×ÀÌºíÀÌ´Ù. ¶óÀÎ ´ÜÀ§·Î °ü¸®ÇÒ ¼ö ÀÖ´Ù.
+ * ì–´ì…ˆë¸”ë¦¬ í•  ì†ŒìŠ¤ì½”ë“œë¥¼ ì…ë ¥ë°›ëŠ” í…Œì´ë¸”ì´ë‹¤. ë¼ì¸ ë‹¨ìœ„ë¡œ ê´€ë¦¬í•  ìˆ˜ ìˆë‹¤.
  */
 char *input_data[MAX_LINES];
 static int line_num;
 
 
 /* 
- * ¾î¼Àºí¸® ÇÒ ¼Ò½ºÄÚµå¸¦ ÅäÅ«´ÜÀ§·Î °ü¸®ÇÏ±â À§ÇÑ ±¸Á¶Ã¼ º¯¼öÀÌ´Ù.
- * operator´Â renamingÀ» Çã¿ëÇÑ´Ù.
- * nixbpe´Â 8bit Áß ÇÏÀ§ 6°³ÀÇ bit¸¦ ÀÌ¿ëÇÏ¿© n,i,x,b,p,e¸¦ Ç¥½ÃÇÑ´Ù.
+ * ì–´ì…ˆë¸”ë¦¬ í•  ì†ŒìŠ¤ì½”ë“œë¥¼ í† í°ë‹¨ìœ„ë¡œ ê´€ë¦¬í•˜ê¸° ìœ„í•œ êµ¬ì¡°ì²´ ë³€ìˆ˜ì´ë‹¤.
+ * operatorëŠ” renamingì„ í—ˆìš©í•œë‹¤.
+ * nixbpeëŠ” 8bit ì¤‘ í•˜ìœ„ 6ê°œì˜ bitë¥¼ ì´ìš©í•˜ì—¬ n,i,x,b,p,eë¥¼ í‘œì‹œí•œë‹¤.
  */
 struct token_unit {
 	char label[20];
@@ -62,9 +62,9 @@ token *token_table[MAX_LINES];
 static int token_line;
 
 /*
- * ½Éº¼À» °ü¸®ÇÏ´Â ±¸Á¶Ã¼ÀÌ´Ù.
- * ½Éº¼ Å×ÀÌºíÀº ½Éº¼ ÀÌ¸§, ½Éº¼ÀÇ À§Ä¡, ½Éº¼ÀÌ ¼ÓÇÑ ÄÁÆ®·Ñ¼½¼ÇÀ¸·Î ±¸¼ºµÈ´Ù.
- * ÃßÈÄ ÇÁ·ÎÁ§Æ®¿¡¼­ »ç¿ëµÈ´Ù.
+ * ì‹¬ë³¼ì„ ê´€ë¦¬í•˜ëŠ” êµ¬ì¡°ì²´ì´ë‹¤.
+ * ì‹¬ë³¼ í…Œì´ë¸”ì€ ì‹¬ë³¼ ì´ë¦„, ì‹¬ë³¼ì˜ ìœ„ì¹˜, ì‹¬ë³¼ì´ ì†í•œ ì»¨íŠ¸ë¡¤ì„¹ì…˜ìœ¼ë¡œ êµ¬ì„±ëœë‹¤.
+ * ì¶”í›„ í”„ë¡œì íŠ¸ì—ì„œ ì‚¬ìš©ëœë‹¤.
  */
 struct symbol_unit {
 	char symbol[10];
@@ -92,7 +92,7 @@ int read_operand(const char* str, char* str_for_save);
 int skip_past_blank (char* str);
 int split(char* srcStr, char* dstStr, char token);
 
-// »õ·Î Á¤ÀÇÇÑ ÇÔ¼ö
+// ìƒˆë¡œ ì •ì˜í•œ í•¨ìˆ˜
 int read_operator(const char* str, char* str_for_save);
 int search_symbol(const char* name, const char* csect);
 int insert_symbol(const char* name, const char* csect, int address);
@@ -104,8 +104,8 @@ char currentCsect[10];
 static int objectProgramLength;
 
 /*
- * ¸®ÅÍ·²À» °ü¸®ÇÏ´Â ±¸Á¶Ã¼ÀÌ´Ù.
- * ¸®ÅÍ·² Å×ÀÌºíÀº ÀÌ¸§, ÁÖ¼Ò°ªÀ¸·Î ±¸¼ºµÈ´Ù.
+ * ë¦¬í„°ëŸ´ì„ ê´€ë¦¬í•˜ëŠ” êµ¬ì¡°ì²´ì´ë‹¤.
+ * ë¦¬í„°ëŸ´ í…Œì´ë¸”ì€ ì´ë¦„, ì£¼ì†Œê°’ìœ¼ë¡œ êµ¬ì„±ëœë‹¤.
  */
 struct literal_unit {
 	char name[10];
