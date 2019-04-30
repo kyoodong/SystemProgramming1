@@ -49,7 +49,7 @@ int main(int args, char *arg[])
 		return -1;
 	}
 
-	make_objectcode_output("output_20162489");
+	make_objectcode_output(/*"output_20162489"*/ NULL);
 	return 0;
 }
 
@@ -608,9 +608,7 @@ int read_operator(const char* str, char* str_for_save) {
 */
 void make_symtab_output(char *file_name)
 {
-    FILE* file = NULL;
-	if (file_name != NULL)
-		file = fopen(file_name, "w");
+    FILE* file = fopen(file_name, "w");
     
 	// 표준 입출력
 	if (file_name == NULL) {
@@ -961,9 +959,7 @@ void strcatWithPrintf(char* dst, const char* format, ...) {
 */
 void make_objectcode_output(char *file_name)
 {
-    FILE* file = NULL;
-	if (file_name != NULL)
-		file = fopen(file_name, "w");
+    FILE* file = fopen(file_name, "w");
     
     // 현재 컨트롤섹션
     char csect[10];
@@ -1105,7 +1101,7 @@ void make_objectcode_output(char *file_name)
             if (!strcmp(csect, "COPY")) {
                 strcatWithPrintf(buffer[bufferCount], "%06X", atoi((*token_table[0]).operand[0]));
             }
-            strcatWithPrintf(buffer[bufferCount], "\n\n");
+            strcatWithPrintf(buffer[bufferCount], "\n");
             bufferCount++;
             objectProgramLength = 0;
             
